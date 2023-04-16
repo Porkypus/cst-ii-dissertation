@@ -1,0 +1,34 @@
+\documentclass[12pt,a4paper,twoside,openright]{report}
+
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{subfiles}
+\usepackage[margin=25mm]{geometry}
+\usepackage{graphicx}
+\usepackage{docmute}
+\renewcommand{\baselinestretch}{1.1}
+\usepackage{fancyvrb}
+\usepackage[ruled, lined, commentsnumbered, longend]{algorithm2e}
+
+\VerbatimFootnotes
+
+\begin{document}
+\subfile{coverpage}
+\subfile{declaration}
+\subfile{acknowledgements}
+\subfile{proforma}
+\newpage
+
+\tableofcontents
+\pagestyle{headings}
+\subfile{introduction}
+\subfile{preparation}
+\subfile{implementation}
+\subfile{evaluation}
+\subfile{conclusions}
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\appendix
+\chapter{Project Proposal}
+\input{../proposal/proposal}
+\end{document}

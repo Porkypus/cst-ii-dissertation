@@ -1,0 +1,45 @@
+\contentsline {chapter}{\numberline {1}Introduction}{9}{}%
+\contentsline {section}{\numberline {1.1}Motivation}{9}{}%
+\contentsline {section}{\numberline {1.2}Related Work}{9}{}%
+\contentsline {chapter}{\numberline {2}Preparation}{11}{}%
+\contentsline {section}{\numberline {2.1}Requirements Analysis}{11}{}%
+\contentsline {section}{\numberline {2.2}Datasets}{11}{}%
+\contentsline {section}{\numberline {2.3}Model Selection}{11}{}%
+\contentsline {subsection}{\numberline {2.3.1}Neural Networks}{11}{}%
+\contentsline {subsection}{\numberline {2.3.2}Dynamic Time Warping}{12}{}%
+\contentsline {subsection}{\numberline {2.3.3}Feature Extraction}{13}{}%
+\contentsline {section}{\numberline {2.4}Tools and Libraries}{14}{}%
+\contentsline {subsection}{\numberline {2.4.1}Visual Studio Code}{14}{}%
+\contentsline {subsection}{\numberline {2.4.2}OpenCV}{15}{}%
+\contentsline {subsection}{\numberline {2.4.3}Mediapipe-Holistic}{15}{}%
+\contentsline {subsection}{\numberline {2.4.4}dtw-python}{16}{}%
+\contentsline {subsection}{\numberline {2.4.5}FastDTW}{16}{}%
+\contentsline {subsection}{\numberline {2.4.6}Git and Github}{17}{}%
+\contentsline {section}{\numberline {2.5}Software Engineering Techniques}{17}{}%
+\contentsline {chapter}{\numberline {3}Implementation}{19}{}%
+\contentsline {section}{\numberline {3.1}Data Pre-processing}{19}{}%
+\contentsline {section}{\numberline {3.2}Mediapipe Extraction}{21}{}%
+\contentsline {subsection}{\numberline {3.2.1}Mediapipe Holistic}{21}{}%
+\contentsline {subsection}{\numberline {3.2.2}Hands Detection Pipeline}{21}{}%
+\contentsline {subsubsection}{Single-Shot Detection}{21}{}%
+\contentsline {subsubsection}{Non-Maximum Suppresion}{22}{}%
+\contentsline {subsection}{\numberline {3.2.3}Pose Detection Pipeline}{23}{}%
+\contentsline {subsubsection}{Pose Detection}{23}{}%
+\contentsline {subsubsection}{Pose Estimation}{23}{}%
+\contentsline {subsection}{\numberline {3.2.4}Mediapipe Pipeline}{23}{}%
+\contentsline {subsection}{\numberline {3.2.5}Mediapipe Implementation}{24}{}%
+\contentsline {section}{\numberline {3.3}Feature Extraction}{25}{}%
+\contentsline {subsection}{\numberline {3.3.1}Extract to Pickle Files}{25}{}%
+\contentsline {subsection}{\numberline {3.3.2}Loading Reference Signs}{25}{}%
+\contentsline {section}{\numberline {3.4}Models}{26}{}%
+\contentsline {section}{\numberline {3.5}Computing Similarity}{28}{}%
+\contentsline {subsection}{\numberline {3.5.1}dtw-python}{28}{}%
+\contentsline {subsubsection}{Challenges Faced}{28}{}%
+\contentsline {subsection}{\numberline {3.5.2}fastdtw}{28}{}%
+\contentsline {section}{\numberline {3.6}Sign Prediction}{28}{}%
+\contentsline {subsection}{\numberline {3.6.1}Batch Size and Threshold}{28}{}%
+\contentsline {section}{\numberline {3.7}Usage}{29}{}%
+\contentsline {chapter}{\numberline {4}Evaluation}{31}{}%
+\contentsline {chapter}{\numberline {5}Conclusion}{33}{}%
+\contentsline {section}{\numberline {5.1}Further Work}{33}{}%
+\contentsline {chapter}{\numberline {A}Project Proposal}{37}{}%

@@ -1,0 +1,9 @@
+Progress Report
+.log
+.fls
+.fdb_latexmk
+.synctex.gz
+.bbl
+.blg
+.toc
+.aux
