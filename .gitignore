@@ -1,9 +1,11 @@
 Progress Report
-.log
-.fls
-.fdb_latexmk
-.synctex.gz
-.bbl
-.blg
-.toc
-.aux
+*.aux
+*.bbl
+*.blg
+*.bbl
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.out
