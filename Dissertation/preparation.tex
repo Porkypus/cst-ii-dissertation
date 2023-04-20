@@ -37,10 +37,45 @@ The project requires the following to be implemented in order to have a working 
 
 \end{itemize}
 
-
 An appropriate dataset is used to perform any form of training or comparison on. Specifically, we target an isolated BSL dataset. However, the nature of sign language in general means that we can expand on different variations of sign language in order to infer how well the model will perform.
 
 \section{Datasets}
+
+\subsection*{BSLDict}
+
+BSLDict is a large dataset of isolated BSL gestures \cite{momeni2020watch}. The data has been obtained from BSL sign aggregation platform \textit{signbsl.com}, with a total of 14k video clips for a vocabulary of 9k labels.
+
+The data provides two main issues:
+
+\begin{itemize}
+    \item \textbf{Lack of examples per label: }A lot of the labels have only one or two videos. This is a problem as there is not enough data for testing or to use deep learning for efficient training.
+    \item \textbf{Different signs per label: }Many labels contain ambiguous sign gestures. Some of the labels have different ways to represent them and some overlap with other labels as well. This leads to poor accuracy when trying to train on them.
+\end{itemize}
+
+The issue of lacking examples was one reason why DTW was used as an algorithm for this project. As deep learning models require a sufficient amount of training data to be sufficiently accurate, we use a model based on DTW instead as it can retain accuracy with less data.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.08]{images/BSLDict.jpeg}
+        \caption[caption]{Examples from the BSLDict dataset}
+    \end{center}
+\end{figure}
+
+\subsection*{LSA64}
+
+LSA64 is a sign database for isolated Argentian Sign Language (LSA) gestures \cite{ronchetti2016lsa64}. It was created to produce a dictionary for LSA and to be used for training automatic sign recognition models. The dataset contains 3200 videos, with 10 signers executing 5 repetitions of 64 different types of signs.
+
+This dataset was used mostly for initial testing purposes given the issues that were encountered with BSLDict. It provides both sufficient data and consistent signs per label.
+
+Signers wore coloured gloves to aid hand recognition and segmentation, as well as wearing dark clothing. This does not affect this project due to the use of mediapipe to recognise signs.
+
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.15]{images/LSA64.png}
+        \caption[caption]{Snapshot from the LSA64 dataset}
+    \end{center}
+\end{figure}
 
 \section{Model Selection}
 
@@ -51,25 +86,35 @@ on mainly on image classification. The best performing networks include 3D Convo
 
 \subsection{Dynamic Time Warping}
 
-Dynamic Time Warping (DTW) is a well-known algorithm for comparing sequences that may have different lengths and may be slightly misaligned. It was first introduced by Sakoe and Chiba in 1978 \cite{sakoe1978dynamic} and has since been widely used in many areas such as speech recognition, pattern recognition, bioinformatics, and finance.
+Dynamic Time Warping (DTW) is a well-known algorithm for comparing sequences that may have different lengths and may be slightly misaligned. It was first introduced by Sakoe and Chiba in 1978 \cite{sakoe1978dynamic} and has since been widely used in many areas such as speech recognition, pattern recognition, bioinformatics, and finance. The idea to use this algorithm for sign language recogntion was inspired from content in the paper by Huu et al. \cite{huu2014human}.
 
-The basic idea of DTW is to find the optimal alignment between two sequences by warping one of the sequences in the time dimension. The algorithm constructs a distance matrix between the two sequences, where each element represents the distance between a point in the first sequence and a point in the second sequence. The optimal path through this matrix is then found using dynamic programming, which minimizes the total distance between the two sequences. The algorithm runs in O$(m \times n)$.
+The basic idea of DTW is to find the optimal alignment between two sequences by warping one of the sequences in the time dimension. The algorithm constructs a distance matrix between the two sequences, where each element represents the distance between a point in the first sequence and a point in the second sequence. The optimal path through this matrix is then found using dynamic programming, which minimizes the total distance between the two sequences.
 
-Let $X = {x_1, x_2, ..., x_{n}}$ and $Y = {y_1, y_2, ..., y_{m}}$ be two sequences of length $n$ and $m$, respectively. The algorithm aims to find the optimal path $\pi = {(i_1,j_1),(i_2,j_2),...,(i_k,j_k)}$ that warps one of the sequences (usually the shorter one) to align with the other sequence. The optimal path $\pi$ is the one that minimizes the total distance between the two sequences, which is defined as:
+\begin{figure}
+    \begin{center}
+        \includegraphics[scale=0.8]{images/DTW.png}
+        \caption[caption]{Matrix with warp path}
+    \end{center}
+\end{figure}
 
-\begin{equation}
+
+Let $X = {x_1, x_2, ..., x_{m}}$ and $Y = {y_1, y_2, ..., y_{n}}$ be two sequences of length $m$ and $n$, respectively. The algorithm aims to find the optimal path $\pi = {(i_1,j_1),(i_2,j_2),...,(i_m,j_n)}$ that warps one of the sequences (usually the shorter one) to align with the other sequence. The optimal path $\pi$ is the one that minimizes the total distance between the two sequences, which is defined as:
+
+\begin{equation*}
     DTW(X,Y) = \min_{\pi}\sqrt{\sum_{(i,j) \in \pi}(x_i - y_j)^2}
-\end{equation}
+\end{equation*}
 
 where $(i,j)$ represents a point in the distance matrix.
 
-To find the optimal path $\pi$, the DTW algorithm constructs a distance matrix $D$ of size $n \times m$, where each element $D_{i,j}$ represents the distance between $x_i$ and $y_j$. The matrix is initialized with large values such that $D_{i,j} = \infty$ for all $i$ and $j$. The first element is set to $D_{1,1} = (x_1 - y_1)^2$. Then, for each element $D_{i,j}$, the algorithm finds the minimum distance among the three neighboring elements:
+To find the optimal path $\pi$, the DTW algorithm constructs a distance matrix $D$ of size $m \times n$, where each element $D_{i,j}$ represents the distance between $x_i$ and $y_j$. The matrix is initialized with large values such that $D_{i,j} = \infty$ for all $i$ and $j$. The first element is set to $D_{1,1} = (x_1 - y_1)^2$. Then, for each element $D_{i,j}$, the algorithm finds the minimum distance among the three neighboring elements:
 
-\begin{equation}
+\begin{equation*}
     D_{i,j} = (x_i - y_j)^2 + \min(D_{i-1,j}, D_{i,j-1}, D_{i-1,j-1})
-\end{equation}
+\end{equation*}
 
 The path through the distance matrix that corresponds to the optimal path $\pi$ is then found by backtracking from the bottom-right corner of the matrix to the top-left corner, following the minimum distance at each step. The resulting path is the optimal path $\pi$, which can be used to align the two sequences.
+
+The time and space complexity of the algorithm are in the quadratic order. In the distance matrix, each cell is filled in exactly once, with each being filled in constant time. That leads to a time and space of complexity of $O(m \times n)$.
 
 \newpage
 
@@ -78,8 +123,6 @@ Algorithm 1 is a simple implementation of the DTW algorithm in pseudocode.
 \begin{algorithm}
     \caption{Simple DTW algorithm}
     \SetKwFunction{isOddNumber}{isOddNumber}
-    % \SetKwInput{Input}{Input}
-    % \SetKwInput{Output}{Output}
     \SetKwInOut{KwIn}{Input}
     \SetKwInOut{KwOut}{Output}
 
@@ -170,20 +213,11 @@ Additionally, Mediapipe Holistic is an open-source library, which means that it 
 
 The \verb|dtw-python| library is a Python implementation of the DTW algorithm, which provides a set of functions for computing the DTW distance between two time series data sequences. The library provides an efficient implementation of the DTW algorithm that can handle sequences of different lengths and allows for the customization of the distance function used to compute the DTW distance.
 
-The algorithm used by dtw-python is similar to the basic DTW algorithm, but it differs in the way it computes the DTW distance. The basic DTW algorithm computes the DTW distance by computing the full distance matrix and finding the optimal path through it. In contrast, the dtw-python algorithm uses dynamic programming to compute the DTW distance by computing only the necessary elements of the distance matrix. This results in a more efficient implementation.
-
 \subsection{FastDTW}
-FastDTW is a variant of the DTW algorithm that trades accuracy for faster computation times. It works by reducing the number of elements that need to be computed in the distance matrix, resulting in a smaller memory footprint and faster computation times.
 
-The FastDTW algorithm consists of two main steps: a coarse-to-fine grid search and a local search. A high-level overview of the algorithm is as follows:
+FastDTW is a variant of the DTW algorithm that trades accuracy for faster computation times \cite{salvador2007toward}. It works by reducing the number of elements that need to be computed in the distance matrix, resulting in a smaller memory footprint and faster computation times.
 
-\begin{enumerate}
-    \item \textbf{Coarse-to-fine grid search:} The first step is to compute the distance between the two sequences at a coarse resolution. This is done by dividing each sequence into non-overlapping windows of length $w$, and computing the distance between the centroids of the windows. The centroids are defined as the average of the elements within each window. The result of this step is a coarse distance matrix $D_{coarse}$ of size $\lceil n/w \rceil \times \lceil m/w \rceil$, where $n$ and $m$ are the lengths of the two sequences.
-    \item \textbf{Local search:} The second step is to refine the distance matrix computed in the first step by performing a local search. The local search algorithm starts at the bottom-right corner of the coarse distance matrix $D_{coarse}$, and iteratively computes the minimum distance between the current element and its three neighbors: the element to its left, the element above it, and the element diagonally above it. This results in a refined distance matrix $D_{refined}$ of size $n \times m$.
-    \item \textbf{Backtracking:} Finally, the optimal warping path is found by backtracking from the bottom-right corner of the refined distance matrix $D_{refined}$ to the top-left corner, using the same rules as the standard DTW algorithm.
-\end{enumerate}
-
-The FastDTW algorithm has a time complexity of $O(w \cdot n \cdot log_2(n))$, where $w$ is the window size and $n$ is the length of the longer sequence. This is faster than the standard DTW algorithm, which has a time complexity of $O(n^2)$, but it also results in slightly less accurate alignment of the sequences.
+The FastDTW algorithm consists of three main steps: a coarsening step, a projection step, and a refinement step.
 
 The \verb|fastdtw| library in Python provides an implementation of the FastDTW algorithm, as well as other variants of the DTW algorithm. It is useful for this project given that there will be real-time detection involved, so a faster algorithm would speed up the predictions.
 
@@ -193,13 +227,13 @@ Git was used for version control as this is the system that I am most comfortabl
 
 \section{Software Engineering Techniques}
 
+In order to deliver a working model, it is important to integrate proper software engineering techniques. This can speed up the implementation and result in a more robust model, less prone to bugs.
+
 \begin{enumerate}
 
-    \item \textbf{Code Reviews:} Code reviews involve a systematic examination of the source code by one or more team members. Code reviews can help identify bugs, improve code quality, and ensure adherence to coding standards and best practices.
     \item \textbf{Unit Testing:} Unit testing involves testing individual units or modules of the software to ensure they function as intended. Unit testing can help catch bugs early in the development process and improve the overall quality of the software.
-    \item \textbf{Continuous Integration/Continuous Delivery (CI/CD):} CI/CD is a set of practices that automate the building, testing, and deployment of software. CI/CD pipelines can help catch bugs early, ensure the software is always in a working state, and make it easy to deploy updates to production environments.
+    \item \textbf{Different Datasets:} This is important for the model to be reliable. Datasets can sometimes cause some features to be too prominent, making it harder to work on real data. It is thus important to check if the model supports other datasets well.
     \item \textbf{Documentation:} Documentation is important for ensuring that others can understand and use the software effectively. It can include documentation of the code, user manuals, and technical specifications.
 \end{enumerate}
 
-These software engineering
 \end{document}

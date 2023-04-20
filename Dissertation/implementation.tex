@@ -9,13 +9,14 @@
 % sometimes be highlighted with advantage.
 
 % ~4500 words
+\documentclass[final,rdr32.tex]{subfiles}
 
-\documentclass[final,dissertation.tex]{subfiles}
+
 \begin{document}
 
 \chapter{Implementation}
 
-In this chapter, I will describe how I implemented my project, describing challenges faced along the way. The implementation consists of the following:
+In this chapter, the overall implementation of the project will be described, mentioning the challenges faced along the way. The implementation pipeline consists of the following key processes:
 
 \begin{itemize}
     \item \textbf{Recording signs: }This includes the code which uses OpenCV to capture frames. They also integrate most of the functionality for determining when to process a given sequence of frames, when to reset the recording, and displaying visual and textual output to the user.
@@ -24,49 +25,57 @@ In this chapter, I will describe how I implemented my project, describing challe
     \item \textbf{Comparing signs: }They focus on the computation using the DTW algorithm. They include the code which return the distances between any two compared signs and also the functionality to determine if any given sign is output with a certain confidence.
 \end{itemize}
 
+\section{Repository Overview}
+
+This section provides an overview of the source code and how the scripts are organised in the repository. The project has been organised such that it is easy to add new datasets and to train on them, provided a new script to process it is written.
+\bigskip
+
+\setlength{\DTbaselineskip}{16pt}
+\dirtree{%
+    .1 .
+    .2 data\DTcomment{Folder to store keypoint data in numpy arrays}.
+    .2 datasets\DTcomment{Folder to store datasets}.
+    .2 models.
+    .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\textbf{72 lines}}.
+    .3 pose\_model.py\DTcomment{\autoref{sec:pose_model}\quad\textbf{48 lines}}.
+    .3 sign\_model.py\DTcomment{\autoref{sec:sign_model}\quad\textbf{76 lines}}.
+    .2 test\_videos\DTcomment{Stored videos for testing}.
+    .2 train\_videos\DTcomment{Stored videos for training}.
+    .2 utils.
+    .3 bsldict\_data\_processing.py\DTcomment{Sort videos in train and test\quad\textbf{35 lines}}.
+    .3 bsldict\_preprocessing.py\DTcomment{Extract labels with enough data\quad\textbf{36 lines}}.
+    .3 compute\_dtw.py\DTcomment{\autoref{sec:dtw-python}\quad\textbf{56 lines}}.
+    .3 compute\_fastdtw.py\DTcomment{\autoref{sec:fastdtw}\quad\textbf{45 lines}}.
+    .3 constants.py\DTcomment{Constants and Parameters\quad\textbf{11 lines}}.
+    .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{172 lines}}.
+    .3 lsa64\_data\_processing.py\DTcomment{Sort videos in train and test\quad\textbf{42 lines}}.
+    .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\textbf{67 lines}}.
+    .3 sign\_eval.py\DTcomment{Class to evaluate signs in test data\quad\textbf{45 lines}}.
+    .3 sign\_recorder.py\DTcomment{Class to record and process signs\quad\textbf{120 lines}}.
+    .3 webcam\_manager.py\DTcomment{Class which handles OpenCV and recording\quad\textbf{71 lines}}.
+    .2 eval.py\DTcomment{Script to run test data evaluation\quad\textbf{57 lines}}.
+    .2 main.py\DTcomment{Script to run real-time detection\quad\textbf{47 lines}}.
+}
+
+
 \section{Data Pre-processing}
 
 The model needs the data to be in a a required format in order to process it. As such, we need to pre-process existing datasets in order to make them suitable.
 
-We order the videos by having a directory for each label, containing all videos which fall under that corresponding label.
+We order the videos by having a directory for each label, containing all videos which fall under that corresponding label. This is illustrated as follows:\newline
 
-\subsection*{BSLDict}
-
-BSLDict is a large dataset of isolated BSL gestures \cite{momeni2020watch}. The data has been obtained from BSL sign aggregation platform \textit{signbsl.com}, with a total of 14k video clips for a vocabulary of 9k labels.
-
-The data provides two main issues:
-
-\begin{itemize}
-    \item \textbf{Lack of examples per label: }A lot of the labels have only one or two videos. This is a problem as there is not enough data for testing or to use deep learning for efficient training.
-    \item \textbf{Different signs per label: }Many labels contain ambiguous sign gestures. Some of the labels have different ways to represent them and some overlap with other labels as well. This leads to poor accuracy when trying to train on them.
-\end{itemize}
-
-The issue of lacking examples was one reason why DTW was used as an algorithm for this project. As deep learning models require a sufficient amount of training data to be sufficiently accurate, we use a model based on DTW instead as it can retain accuracy with less data.
-
-\begin{figure}
-    \begin{center}
-        \includegraphics[scale=0.07]{images/BSLDict.jpeg}
-        \caption[caption]{Examples from the BSLDict dataset}
-    \end{center}
-\end{figure}
-
-\subsection*{LSA64}
-
-LSA64 is a sign database for isolated Argentian Sign Language (LSA) gestures \cite{ronchetti2016lsa64}. It was created to produce a dictionary for LSA and to be used for training automatic sign recognition models. The dataset contains 3200 videos, with 10 signers executing 5 repetitions of 64 different types of signs.
-
-This dataset was used mostly for initial testing purposes given the issues that were encountered with BSLDict. It provides both sufficient data and consistent signs per label.
-
-Signers wore coloured gloves to aid hand recognition and segmentation, as well as wearing dark clothing. This does not affect this project due to the use of mediapipe to recognise signs.
-
-
-\begin{figure}
-    \begin{center}
-        \includegraphics[scale=0.15]{images/LSA64.png}
-        \caption[caption]{Snapshot from the LSA64 dataset}
-    \end{center}
-\end{figure}
+\dirtree{%
+    .1 train\_videos.
+    .2 Accept.
+    .3 Accept-0.mp4.
+    .3 Accept-1.mp4.
+    .2 Appear.
+    .3 Appear-0.mp4.
+    .3 Appear-1.mp4.
+}
 
 \section{Mediapipe Extraction}
+\label{sec:mediapipe}
 
 Using our datasets, we now need to extract information from them. This is done by processing each frame in a given video individually.
 
@@ -140,7 +149,7 @@ To solve this, Mediapipe Holistic uses a multistage pipeline. First, the human p
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/holistic_pipeline.png}
+        \includegraphics[scale=0.21]{images/holistic_pipeline.png}
         \caption[caption]{Pipeline Overview}
     \end{center}
 \end{figure}
@@ -160,6 +169,7 @@ The goal here is to obtain the position of the different connections between joi
 
 
 \section{Feature Extraction}
+\label{sec:feature}
 
 Once a list of connections from mediapipe has been obtained, we want to store this data in a suitable format and being able to reload them. The \verb|feature_extraction| script provides a range of methods to do so. The initial training stage involves obtaining a collection of reference signs. These are what the recorded signs will be compared to to evaluate similarity.
 
@@ -178,10 +188,12 @@ To perform predictions, the reference data needs to be loaded for the session. T
 For efficiency, we use a \verb|pandas.DataFrame| to store the name of the sign, its respective \verb|sign_model|, and a distance initialised to 0. This will be overwritten when computing the distances.
 
 \section{Models}
+\label{sec:models}
 
 The project uses three models to represent features extracted from the vectors provided by Mediapipe Holistic.
 
-\subsection*{Hand Model}
+\subsection{Hand Model}
+\label{sec:hand_model}
 
 The \verb|hand_model| stores the feature vector representing all the angles between the connections provided by mediapipe on an arbitrary hand. Mediapipe provides 21 connections per hand, resulting in a feature vector of $21 * 21 = 441$ angles. We use the dot product formula to obtain the angle given two vectors (See Figure 3.2):
 
@@ -199,7 +211,8 @@ The model only represents one particular frame, given a sequence of them. The fi
 \end{figure}
 
 
-\subsection*{Pose Model}
+\subsection{Pose Model}
+\label{sec:pose_model}
 
 The \verb|pose_model| takes a different approach. Instead of using angles, we use the distance between the shoulder and elbow as a normalisation distance, normalising coordinates provided by mediapipe. This is because the pose landmarks also include those of the lower body, including the legs. Hence, we only use the landmarks of the shoulder, elbows and wrist, as they are more likely to be present in the frames. Taking $a$ and $b$ as the position vectors representing the shoulder and elbow respectively, we obtain the new coordinates as follows:
 \begin{equation*}
@@ -213,7 +226,8 @@ The \verb|pose_model| takes a different approach. Instead of using angles, we us
     \end{center}
 \end{figure}
 
-\subsection*{Sign Model}
+\subsection{Sign Model}
+\label{sec:sign_model}
 
 The \verb|sign_model| object stores the hand and pose models for each frame in the sequence representing the sign, essentially being the representation of the sign as its features. This is what is compared when computing the similarity between a reference sign and a recorded sign.
 
@@ -227,9 +241,12 @@ Each object contains the following attributes:
 
 \section{Computing Similarity}
 
-The project provides two scripts for computing similarity: \verb|compute_dtw| and\newline \verb|compute_fastdtw|, which use the \verb|dtw-python| and \verb|fastdtw| libraries respectively. The project provides an easy way to toggle between the two algorithms.
+The project provides two scripts for computing similarity: \verb|compute_dtw| and\newline \verb|compute_fastdtw|, which use the \verb|dtw-python|\cite{giorgino2009computing} and \verb|fastdtw| \cite{salvador2007toward} libraries respectively. The project provides an easy way to toggle between the two algorithms.
 
 \subsection{dtw-python}
+\label{sec:dtw-python}
+
+The outline of the DTW algorithm is mentioned in Section 2.3.2. The implementation of the algorithm uses the \verb|dtw| method from the \verb|dtw-python| library, without any additional arguments. The package allows windowing to be used, which can speed up the algorithm, but an alternative algorithm, FastDTW, is proposed later instead.
 
 The \verb|dtw_distances| method is what fills the \verb|pandas.DataFrame| with distances. It takes the DataFrame as an argument along with the sign model representing the recorded sign. The embeddings of the sign model are extracted to variables as they are the sequences to be compared.
 
@@ -241,8 +258,98 @@ The model starts iterating through every sign present in the DataFrame. It disca
 The \verb|dtw| method handles the case of having a sequence of length 1 differently. In such a case, it transposes the array. This happened in a few instances on training due to some signs registering a particular hand in only one frame. This is dependent on the confidence tracking of mediapipe. As such, this specific case is handled by duplicating the singular entry present in the sequence to obtain an array of length 2.
 
 \subsection{fastdtw}
+\label{sec:fastdtw}
+A high-level overview of the FastDTW algorithm is given in Section 2.4.5. This section will provide a detailed overview of the algorithm, as outlined in the paper proposing it \cite{salvador2007toward} and also cover the implementation, which was done using the \verb|fastdtw| library.
 
-The \verb|fastdtw_distances| method works similarly to \verb|dtw_distances|. It uses the \verb|fastdtw| instead to calculate the distances. This implementation does not suffer from the same issue of handling sequences of length 1. This implementation runs in linear time, rather than in O$(m \times n)$.
+\subsubsection{Speeding up DTW}
+
+FastDTW uses ideas from two approaches to speed up the DTW algorithm.
+
+\textit{Constraints} are used to limit the number of cells that are present in the distance matrix. For example, the Sakoe-Chiba band \cite{sakoe1978dynamic} limits the cells to a band shape and the Itakura parallelogram \cite{itakura1975minimum} limits them to a parallelogram with corners at the start and end of the distance matrix.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{images/constraint.png}
+        \caption{Sakoe-Chiba Band (left) and Itakura Parallelogram (right)}
+    \end{center}
+\end{figure}
+
+Only the shaded cells are filled in by the DTW algorithm. We determine the window, or width, of the shaded area using a parameter to the algorithm.
+
+This method does not guarantee that the optimal global alignment will be found, as it only limits the valid warping paths to those within the constraints of the window.
+
+Using constraints improves the run-time of the algorithm by a constant factor, but it still runs in O$(m \times n)$ if the size of the window is a function of the length of the input time series. They work best where the optimal global alignment is expected to be close to a linear warp and passes through the bounded area of the distance matrix.
+
+
+\textit{Data abstraction} \cite{chu2002iterative} is another way to speed up the algorithm. The aim is to reduce the representation of the data, a smaller matrix in this case, to run the algorithm on.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{images/data_abstraction.png}
+        \caption{Finding warp path on lower-resolution distance matrix}
+    \end{center}
+\end{figure}
+
+Instead of running the algorithm on a full-resolution matrix, the number of points in the time series are reduced, leading to a lower resolution matrix. The algorithm is then used on this matrix to obtain a warp path, which is then mapped back onto the original full-resolution matrix.
+
+The resulting warp path is usually not optimal, and the level of inaccuracy increases the more the matrix is simplified. This can be significant in applications where local variations have a great effect on the warp path.
+
+This method speeds up the algorithm by a constant factor as well, but the overall time and space complexity remain unchanged.
+
+\subsubsection{Algorithm Description}
+
+The algorithm is based on graph bisection \cite{karypis1997multilevel}, which involves splitting a graph into smaller parts, roughly equivalent. The goal is to minimise the sum of the edges that would be broken. A multi-level approach aims at correcting large graphs with the solutions from smaller ones, in a dynamic-programming fashion. FastDTW uses this to find an accurate warp path.
+
+The algorithm involves the following operations:
+\begin{enumerate}
+    \item \textit{Coarsening}, which involves representing the time series in a reduced form, using as few points as possible.
+    \item \textit{Projection}, which is to find the warp path on a lower-resolution matrix. This will be used as an initial baseline for further refinement after projecting it on the full-resolution matrix.
+    \item \textit{Refinement}, which is to refine the projected warp path through local adjustments of the warp path.
+\end{enumerate}
+
+\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure 3.9.
+
+The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure 3.9, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{images/fastdtw.png}
+        \caption{Gradual refinement of warp path as resolution increases}
+    \end{center}
+\end{figure}
+
+FastDTW evaluates only the cells in the neighbourhood of the projected warping path. The number of cells that the algorithm computes scales linearly with the length of the time series. This leads to a complexity of $O(n)$, if we consider $n$ to be a representation of both time series being compared.
+
+The following pseudocode, as outlined in the relevant paper \cite{salvador2007toward}, describes the algorithm:\\
+
+\begin{algorithm}[H]
+    \caption{FastDTW algorithm}
+    \SetKwInOut{KwIn}{Input}
+    \SetKwInOut{KwOut}{Output}
+
+    \KwIn{X: array $[x_1, x_2, \dots, x_m]$, Y: array $[y_1, y_2, \dots, y_n]$}, radius: int \\
+    \KwOut{Distance: float}
+
+    // The minimum size of the coarsest resolution, the base case\\
+    $minSize = radius+2$
+
+    \eIf{$|X| \leq minSize$ \textbf{or} $|Y| \leq minSize$}{
+        // For small time-series, run DTW\\
+        \KwRet{DTW($X$, $Y$)}
+    }{
+        $reducedX = X.reduceByHalf$\\
+        $reducedY = Y.reduceByHalf$\\
+        $lowResPath = FastDTW(reducedX, reducedY, radius)$\\
+        $window = HighResWindow(lowResPath, X, Y, radius)$\\
+        \KwRet{DTW($X$, $Y$, $window$)}
+    }
+\end{algorithm}
+\bigskip
+Lines 8-9 are executed multiple times until the base case is reached. Line 10 is a recursive call which updates the window one very call, which is then passed to the DTW algorithm to do the adjustments with the new constraints.
+
+\subsubsection{Implementation}
+
+The \verb|fastdtw_distances| method works similarly to \verb|dtw_distances|. It uses the \verb|fastdtw| method from the \verb|fastdtw| library instead to calculate the distances. This implementation does not suffer from the same issue of handling sequences of length 1. This implementation runs in linear time, rather than in O$(m \times n)$.
 
 \section{Sign Prediction}
 
@@ -266,8 +373,5 @@ The model outputs ``Unknown Sign'' if the threshold is not met.
 The implementation provides a record button to start a capture of a determined number of frames. Once pressed, the feed will capture that amount of frames and process them. To indicate that the feed is recording, a circle is used as an indicator. It turns red while the feed is recording.
 
 A hand and pose model will be generated for each frame and they are all stored in a sign model. Once compared, the program will output the most probable label as a prediction, which will be displayed on the bottom of the feed.
-
-
-
 
 \end{document}
