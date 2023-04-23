@@ -20,10 +20,12 @@ In this chapter, the overall implementation of the project will be described, me
 
 \begin{itemize}
     \item \textbf{Recording signs: }This includes the code which uses OpenCV to capture frames. They also integrate most of the functionality for determining when to process a given sequence of frames, when to reset the recording, and displaying visual and textual output to the user.
-    \item \textbf{Pre-processing datasets: }They help process the datasets into a suitable format for the program to read them. LSA64 has one script which does the entire processing step, whereas BSLDict has an additional script to filter labels that have less than a desired amount of data.
-    \item \textbf{Extracting features from the datasets: }They are used to get the relevant features that will be used to train our model. We use mediapipe holistic to first extract landmarks from video frames, then we convert these to angles and relative distances. This is discussed further in the relevant following section.
-    \item \textbf{Comparing signs: }They focus on the computation using the DTW algorithm. They include the code which return the distances between any two compared signs and also the functionality to determine if any given sign is output with a certain confidence.
+    \item \textbf{Pre-processing datasets: }These scripts help process the datasets into a suitable format for the program to read them. LSA64 has one script which does the entire processing step, whereas BSLDict has an additional script to filter labels that have less than a desired amount of data.
+    \item \textbf{Extracting features from the datasets: }This is the code that is used to obtain the relevant features that will be used to train our model. Mediapipe holistic is used to first extract landmarks from video frames, then to convert these to angles and relative distances. This is discussed further in the relevant following section.
+    \item \textbf{Comparing signs: }This part of the pipeline focuses on the computation using the DTW algorithm. It includes the code which returns the distances between any two compared signs and also the functionality to determine if any given sign is output with a certain confidence.
 \end{itemize}
+
+There are many scripts which when combined together, achieve those processes. The project makes use of objects to make the code reusable and to easily be able to expand it.
 
 \section{Repository Overview}
 
@@ -33,36 +35,35 @@ This section provides an overview of the source code and how the scripts are org
 \setlength{\DTbaselineskip}{16pt}
 \dirtree{%
     .1 .
-    .2 data\DTcomment{Folder to store keypoint data in numpy arrays}.
     .2 datasets\DTcomment{Folder to store datasets}.
     .2 models.
     .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\textbf{72 lines}}.
     .3 pose\_model.py\DTcomment{\autoref{sec:pose_model}\quad\textbf{48 lines}}.
     .3 sign\_model.py\DTcomment{\autoref{sec:sign_model}\quad\textbf{76 lines}}.
-    .2 test\_videos\DTcomment{Stored videos for testing}.
-    .2 train\_videos\DTcomment{Stored videos for training}.
     .2 utils.
-    .3 bsldict\_data\_processing.py\DTcomment{Sort videos in train and test\quad\textbf{35 lines}}.
-    .3 bsldict\_preprocessing.py\DTcomment{Extract labels with enough data\quad\textbf{36 lines}}.
+    .3 bsldict\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{35 lines}}.
+    .3 bsldict\_preprocessing.py\DTcomment{\autoref{sec:data}\quad\textbf{36 lines}}.
     .3 compute\_dtw.py\DTcomment{\autoref{sec:dtw-python}\quad\textbf{56 lines}}.
     .3 compute\_fastdtw.py\DTcomment{\autoref{sec:fastdtw}\quad\textbf{45 lines}}.
-    .3 constants.py\DTcomment{Constants and Parameters\quad\textbf{11 lines}}.
+    .3 constants.py\DTcomment{\autoref{sec:constants}\quad\textbf{11 lines}}.
     .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{172 lines}}.
-    .3 lsa64\_data\_processing.py\DTcomment{Sort videos in train and test\quad\textbf{42 lines}}.
+    .3 lsa64\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{42 lines}}.
     .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\textbf{67 lines}}.
-    .3 sign\_eval.py\DTcomment{Class to evaluate signs in test data\quad\textbf{45 lines}}.
-    .3 sign\_recorder.py\DTcomment{Class to record and process signs\quad\textbf{120 lines}}.
-    .3 webcam\_manager.py\DTcomment{Class which handles OpenCV and recording\quad\textbf{71 lines}}.
+    .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{45 lines}}.
+    .3 sign\_recorder.py\DTcomment{\autoref{sec:sign_recorder}\quad\textbf{120 lines}}.
+    .3 webcam\_manager.py\DTcomment{\autoref{sec:webcam}\quad\textbf{71 lines}}.
     .2 eval.py\DTcomment{Script to run test data evaluation\quad\textbf{57 lines}}.
     .2 main.py\DTcomment{Script to run real-time detection\quad\textbf{47 lines}}.
 }
 
 
 \section{Data Pre-processing}
+\label{sec:data}
 
 The model needs the data to be in a a required format in order to process it. As such, we need to pre-process existing datasets in order to make them suitable.
 
-We order the videos by having a directory for each label, containing all videos which fall under that corresponding label. This is illustrated as follows:\newline
+We order the videos by having a directory for each label, containing all videos which fall under that corresponding label. This is illustrated as follows:
+\bigskip
 
 \dirtree{%
     .1 train\_videos.
@@ -73,7 +74,9 @@ We order the videos by having a directory for each label, containing all videos 
     .3 Appear-0.mp4.
     .3 Appear-1.mp4.
 }
-
+\bigskip
+The scripts \verb|bsldict_data processing.py | and \verb|lsa64_data_processing.py| process their respective datasets to obtain it in such a format. \\
+Note that \verb|bsldict_preprocessing.py| is used first if we wish to filter labels which have more than a minimum number of videos.
 \section{Mediapipe Extraction}
 \label{sec:mediapipe}
 
@@ -147,9 +150,11 @@ One problem with using multiple separate models is that each is optimised for th
 
 To solve this, Mediapipe Holistic uses a multistage pipeline. First, the human pose is estimated using the pose pipeline. Using the inferred pose landmarks, it then derives the regions of interest (ROI) for the face and hands, employing a recrop model along the way to improve it. The ROIs are then passed into the respective models to obtain the remaining landmarks.
 
+\newpage
+
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[scale=0.21]{images/holistic_pipeline.png}
+        \includegraphics[width=\textwidth]{images/holistic_pipeline.png}
         \caption[caption]{Pipeline Overview}
     \end{center}
 \end{figure}
@@ -195,13 +200,13 @@ The project uses three models to represent features extracted from the vectors p
 \subsection{Hand Model}
 \label{sec:hand_model}
 
-The \verb|hand_model| stores the feature vector representing all the angles between the connections provided by mediapipe on an arbitrary hand. Mediapipe provides 21 connections per hand, resulting in a feature vector of $21 * 21 = 441$ angles. We use the dot product formula to obtain the angle given two vectors (See Figure 3.2):
+The \verb|hand_model| class creates objects that store the feature vector representing all the angles between the connections provided by mediapipe on an arbitrary hand. Mediapipe provides 21 connections per hand, resulting in a feature vector of $21 * 21 = 441$ angles. We use the dot product formula to obtain the angle given two vectors (See Figure 3.2):
 
 \begin{equation*}
     \theta = cos^{-1}\Big(\frac{a \cdot b}{|a| |b|}\Big) \text{, where $a$ and $b$ represent connections}
 \end{equation*}
 
-The model only represents one particular frame, given a sequence of them. The final sign gesture is thus represented by a sequence of hand models.
+The model only represents one particular frame, given a sequence of them. The final sign gesture is thus represented by a sequence of hand models, one for each hand.
 
 \begin{figure}[H]
     \begin{center}
@@ -355,7 +360,15 @@ The \verb|fastdtw_distances| method works similarly to \verb|dtw_distances|. It 
 
 Given the \verb|pandas.DataFrame| with all distances computed, a prediction can now be made. The DataFrame is first sorted in ascending order of distances, with the top row being the sign with the lowest distance. Lower distances indicate higher similarity.
 
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{images/dataframe.png}
+        \caption{Dataframe with more likely labels, sorted by distance}
+    \end{center}
+\end{figure}
+
 \subsection{Batch Size and Threshold}
+\label{sec:batch}
 
 The \verb|get_sign_predicted| method takes an argument for \verb|batch_size|. This indicates how many signs we need to consider in order to make a reliable prediction. For example, we can take a batch size of 5, which means we take the 5 signs with the lowest distances and output the most common one. This increases the confidence in the prediction made. We choose a label $l$ as follows:
 
@@ -368,10 +381,56 @@ $N$ corresponds to the chosen \verb|batch_size|. A reasonable upper bound for $N
 The threshold argument is used to determine if a sign is common enough to be output with a certain minimum confidence. It is defined as the minimum ratio of appearances to the batch size that a sign needs to achieve in order to be output.
 The model outputs ``Unknown Sign'' if the threshold is not met.
 
+\section{Sign Recorder}
+\label{sec:sign_recorder}
+
+The \verb|SignRecorder| class contains all the methods which bind the program for real-time detection together. It establishes the required pipeline and uses the methods and classes from other scripts to yield a prediction from a recorded sign. An overview of the pipeline is given below:
+
+\begin{enumerate}
+    \item Initialise \verb|SignRecorder| object with an empty list, a DataFrame passed by reference, and a desired sequence length to determine how many frames to record.
+    \item Start recording using the \verb|record| method. A boolean \verb|is_recording| is used to determine when the object is recording. The distances in the DataFrame are set to 0.
+    \item While recording, a frame from the input is processed and the results are appended to to the list. This is done while the number of frames processed is less than the sequence length. If this exceeds the sequence length, then recording is stopped and the array is converted to a \verb|sign_model| object.
+    \item The \verb|sign_model| object is compared with each \verb|sign_model| object in the DataFrame and the resulting distance is stored in the corresponding row.
+    \item Once all \verb|sign_model| object in the DataFrame have been compared, the DataFrame is sorted in ascending order, starting with the lowest distances at the top.
+    \item The top \verb|batch_size| rows are chosen and the output label is determined as described in Section \ref{sec:batch}.
+\end{enumerate}
+
+\section{Sign Evaluator}
+\label{sec:sign_eval}
+
+The \verb|SignEval| class contains all the methods which enables the model to be tested on testing data. It uses a similar pipeline to that used in the \verb|sign_recorder| class. One difference is that there is no sequence length passed as parameter, as the length of the video sequences are used instead. There is also no variables and methods associated with recording required. The pipeline can be outlined as follows:
+
+\begin{enumerate}
+    \item Initialise \verb|SignEval| object with an empty list, and a DataFrame passed by reference.
+    \item While the video has frames, the list is filled with the results of each processed frame.
+    \item When the video has no more frames left, the list is used to initialise a  \verb|sign_model| object.
+    \item The \verb|sign_model| object is compared with each \verb|sign_model| object in the DataFrame and the resulting distance is stored in the corresponding row.
+    \item Once all \verb|sign_model| object in the DataFrame have been compared, the DataFrame is sorted in ascending order, starting with the lowest distances at the top.
+    \item The top \verb|batch_size| rows are chosen and the output label is determined as described in Section \ref{sec:batch}.
+\end{enumerate}
+
+The \verb|sign_eval| object can be used to generate a list of predicted labels, which can be compared with the list of actual labels to obtain a measure of accuracy.
+
+
+\section{Webcam Manager}
+\label{sec:webcam}
+
+The \verb|WebcamManager| class contains the methods to control the visual interface of the OpenCV feed. It provides information such as what is the output label and when the model is recording. This class is only relevant for real-time detection.
+
 \section{Usage}
 
-The implementation provides a record button to start a capture of a determined number of frames. Once pressed, the feed will capture that amount of frames and process them. To indicate that the feed is recording, a circle is used as an indicator. It turns red while the feed is recording.
+The implementation provides a record button to start a capture of a specific number of frames. Once pressed, the feed will capture that amount of frames and process them. To indicate that the feed is recording, a circle is used as an indicator. It turns red while the feed is recording.
 
 A hand and pose model will be generated for each frame and they are all stored in a sign model. Once compared, the program will output the most probable label as a prediction, which will be displayed on the bottom of the feed.
+
+\subsection{Constants}
+\label{sec:constants}
+
+\verb|constants.py| is a script containing parameters and constants.
+\verb|FASTDTW| is a boolean which toggles between using the basic DTW algorithm and the FastDTW implementation.
+\verb|BATCH_SIZE| is an integer representing the batch size mentionned in Section \ref{sec:batch}. This can be tweaked according to the data being trained on.
+\verb|DATA_PATH|, \verb|TEST_PATH|, and \verb|FEATURE_PATH| are constants which dictate where training videos, test videos, and keypoint data are stored.
+\verb|mappings| is a dictionary which is used to process the LSA64 dataset, associating its corresponding labels by id.
+
 
 \end{document}
