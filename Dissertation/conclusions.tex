@@ -7,8 +7,24 @@
 
 \chapter{Conclusion}
 
+\section{Accomplishments}
+
+The original aim of this project was to provide an image learning model that successfully recognises a subset of British Sign Language with reliable accuracy and efficiency. Success of the project was also determined to be based on the implementation of the training pipeline and the possibility of using other external devices other than webcams.
+
+Over the course of the project, the success criterion of implementing an image learning model was augmented by instead training on videos. This corresponds to one of the extensions covered in the project proposal, relating to the evaluation of signs with more movement rather than static ones. The model also does per-frame processing on the training data, which fulfills this success criterion. The resulting model achieved similar accuracy compared to other sign language recognition models.
+
+The model was also trained on Argentinian Sign Language. This demonstrates the ability to easily incorporate new training data to the model to augment its vocabulary. As such, this not only meets the relevant success criteria listed in the proposal, but also cover the extension about incorporating other variations of sign languages apart from British Sign Language into the model pipeline.
+
+Research about other external devices has been done. The separation between the data capture and the training process means that the model can be successfully tuned to a different device to capture data, rather than coordinates from Mediapipe with video obtained from a webcam. Thus, this success criterion has also been met. Actual testing using such devices was not conducted due to their unavailability.
+
+Finally, the project incorporated a faster algorithm for processing, namely \verb|fastdtw|. This has been tested and shown to achieve faster processing times compared to the basic implementation provided by \verb|dtw-python|. As such, this is final extension that has been met.
+
 
 \section{Further Work}
+
+While the model met all the required success criteria, the work done during the project timeline revealed that there is a lot of room for improvement. One point that has been brought up was the model's inability to recognise negatives, which are gestures that it has not been trained on. Being able to do so would enable even more possible further work, such as continuous sign language recognition.
+
+Continuous sign language recognition involves much more precise processing, with heavy emphasis on data segmentation to extract features. It would be interesting to see how well the DTW algorithm would fare on such data and if it would still be a viable model to be used for such purposes.
 
 
 \end{document}

@@ -176,7 +176,7 @@ The goal here is to obtain the position of the different connections between joi
 \section{Feature Extraction}
 \label{sec:feature}
 
-Once a list of connections from mediapipe has been obtained, we want to store this data in a suitable format and being able to reload them. The \verb|feature_extraction| script provides a range of methods to do so. The initial training stage involves obtaining a collection of reference signs. These are what the recorded signs will be compared to to evaluate similarity.
+Once a list of connections from mediapipe has been obtained, we want to store this data in a suitable format and be able to reload them. The \verb|feature_extraction| script provides a range of methods to do so. The initial training stage involves obtaining a collection of reference signs. These are what the recorded signs will be compared to to evaluate similarity.
 
 \subsection{Extract to Pickle Files}
 
@@ -429,6 +429,7 @@ A hand and pose model will be generated for each frame and they are all stored i
 \verb|constants.py| is a script containing parameters and constants.
 \verb|FASTDTW| is a boolean which toggles between using the basic DTW algorithm and the FastDTW implementation.
 \verb|BATCH_SIZE| is an integer representing the batch size mentionned in Section \ref{sec:batch}. This can be tweaked according to the data being trained on.
+\verb|THRESHOLD| is an integer representing the threshold mentionned in Section \ref{sec:batch}. Changing this value will affect the confidence of the model.
 \verb|DATA_PATH|, \verb|TEST_PATH|, and \verb|FEATURE_PATH| are constants which dictate where training videos, test videos, and keypoint data are stored.
 \verb|mappings| is a dictionary which is used to process the LSA64 dataset, associating its corresponding labels by id.
 
