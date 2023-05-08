@@ -1,17 +1,21 @@
 \documentclass[12pt,a4paper,twoside,openright]{report}
 
+
+\usepackage[table]{xcolor}
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
 \usepackage{subfiles}
 \usepackage{dirtree}
 \usepackage[margin=25mm]{geometry}
+\usepackage{tikz}
 \usepackage{pgfplots}  
 \usepackage{graphicx}
 \usepackage{docmute}
 \renewcommand{\baselinestretch}{1.1}
 \usepackage{fancyvrb}
 \usepackage[ruled, lined, linesnumbered, commentsnumbered, longend]{algorithm2e}
+
 \renewcommand{\sectionautorefname}{\S}
 \renewcommand{\subsectionautorefname}{\S}
 \renewcommand{\subsubsectionautorefname}{\S}
@@ -19,6 +23,7 @@
 \VerbatimFootnotes
 \pgfplotsset{compat=1.18}
 \begin{document}
+%TC: ignore
 \subfile{coverpage}
 \subfile{declaration}
 \subfile{acknowledgements}
@@ -27,6 +32,7 @@
 
 \tableofcontents
 \pagestyle{headings}
+%TC: endignore
 \subfile{introduction}
 \subfile{preparation}
 \subfile{implementation}
@@ -34,7 +40,9 @@
 \subfile{conclusions}
 \bibliographystyle{ieeetr}
 \bibliography{refs}
+%TC: ignore
 \appendix
 \chapter{Project Proposal}
 \input{../proposal/proposal}
+%TC: endignore
 \end{document}

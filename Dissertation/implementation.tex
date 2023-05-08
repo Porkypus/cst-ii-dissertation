@@ -49,6 +49,7 @@ This section provides an overview of the source code and how the scripts are org
     .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{172 lines}}.
     .3 lsa64\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{42 lines}}.
     .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\textbf{67 lines}}.
+    .3 performance.py\DTcomment{\autoref{sec:performance}\quad\textbf{37 lines}}.
     .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{45 lines}}.
     .3 sign\_recorder.py\DTcomment{\autoref{sec:sign_recorder}\quad\textbf{120 lines}}.
     .3 webcam\_manager.py\DTcomment{\autoref{sec:webcam}\quad\textbf{71 lines}}.
@@ -312,13 +313,11 @@ The algorithm involves the following operations:
     \item \textit{Refinement}, which is to refine the projected warp path through local adjustments of the warp path.
 \end{enumerate}
 
-\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure 3.9.
-
-The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure 3.9, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
+\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure 3.9. The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure 3.9, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[scale=1]{images/fastdtw.png}
+        \includegraphics[scale=0.9]{images/fastdtw.png}
         \caption{Gradual refinement of warp path as resolution increases}
     \end{center}
 \end{figure}

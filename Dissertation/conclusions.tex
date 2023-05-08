@@ -17,14 +17,12 @@ The model was also trained on Argentinian Sign Language. This demonstrates the a
 
 Research about other external devices has been done. The separation between the data capture and the training process means that the model can be successfully tuned to a different device to capture data, rather than coordinates from Mediapipe with video obtained from a webcam. Thus, this success criterion has also been met. Actual testing using such devices was not conducted due to their unavailability.
 
-Finally, the project incorporated a faster algorithm for processing, namely \verb|fastdtw|. This has been tested and shown to achieve faster processing times compared to the basic implementation provided by \verb|dtw-python|. As such, this is final extension that has been met.
-
+Finally, the project incorporated a faster algorithm for processing, namely \verb|fastdtw|. Despite being tested and shown to achieve slower processing times compared to the basic implementation provided by \verb|dtw-python|, the algorithm scales much more efficiently as the sequences grow in size, indicating possibility for further extensions.
 
 \section{Further Work}
 
-While the model met all the required success criteria, the work done during the project timeline revealed that there is a lot of room for improvement. One point that has been brought up was the model's inability to recognise negatives, which are gestures that it has not been trained on. Being able to do so would enable even more possible further work, such as continuous sign language recognition.
+While the model met all the required success criteria, the work done during the project timeline revealed that there is a lot of room for improvement. One point that has been brought up was the model's inability to recognise negatives reliably, which are gestures that it has not been trained on. Being able to do so would enable even more possible further work, such as continuous sign language recognition.
 
 Continuous sign language recognition involves much more precise processing, with heavy emphasis on data segmentation to extract features. It would be interesting to see how well the DTW algorithm would fare on such data and if it would still be a viable model to be used for such purposes.
-
 
 \end{document}

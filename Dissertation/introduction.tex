@@ -14,12 +14,16 @@
 
 The motivation behind this project is to improve communication accessibility for individuals who use British Sign Language (BSL). BSL is a visual language that is used by around 150,000 people in the UK, many of whom are deaf or hard of hearing. Despite its prevalence, BSL is not widely understood or recognized by the general population, making communication with individuals who use BSL difficult and often frustrating. Additionally, the project aims to raise awareness and understanding of BSL, and to demonstrate the power of technology to promote accessibility and inclusivity.
 
+Machine learning and AI models are already common in the field of sign language recognition, but existing datasets are often unsuited for specific model. Lack of enough training data for certain labels is common, due to the sheer number of them available for each different variation of sign language. As such, a model which performs efficiently using low amounts of training data is desired. The model should also be optimised to perform in real-time, as such a use case would more practical for sign language users.
+
+It also important to note that these methods can be extended to other variations of sign language. Some models are optimised for specific variations of sign language, due to its inherent features such as static signing compared to moving ones, and the number of hands involved. The possibility of using other datasets is explored in this project. A basic model used for basic human-action recognition serves as the base case, and sign language recognition is an extension of it.
+
 \section{Related Work}
 
 Sign language recognition can be grouped into two distinct parts: isolated sign language and continuous sign language. While isolated sign language involves distinct gestures being performed one at a time, continuous signing involves many gestures performed in quick succession, often merging some signs together.
 
 Work has been conducted on the BOBSL\cite{albanie2021bbc} dataset, which is the largest continuous BSL dataset. This work aimed at improving real-time translation of BSL, which is usually performed with continuous signing.
 
-Although this project focuses primarily on BSL, it is still important to mention other work on other variations of sign language due to the similarities in the main task. The MS-ASL dataset is one of the largest datasets for isolated sign language recognition. The study which yielded it also proposed I3D as a novel way of classifying sign gestures.
+Although this project focuses primarily on BSL, it is still important to mention other work on other variations of sign language due to the similarities in the main task. The MS-ASL dataset \cite{joze2018ms} is one of the largest datasets for isolated sign language recognition. The study which yielded it also proposed I3D as a novel way of classifying sign gestures. The LSA64 dataset \cite{ronchetti2016lsa64} is another dataset which has been used for evaluating models such as SPOTER \cite{bohavcek2022sign}.
 
 \end{document}

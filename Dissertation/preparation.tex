@@ -98,7 +98,7 @@ The basic idea of DTW is to find the optimal alignment between two sequences by 
 \end{figure}
 
 
-Let $X = {x_1, x_2, ..., x_{m}}$ and $Y = {y_1, y_2, ..., y_{n}}$ be two sequences of length $m$ and $n$, respectively. The algorithm aims to find the optimal path $\pi = {(i_1,j_1),(i_2,j_2),...,(i_m,j_n)}$ that warps one of the sequences (usually the shorter one) to align with the other sequence. The optimal path $\pi$ is the one that minimizes the total distance between the two sequences, which is defined as:
+Let $X = {x_1, x_2, ..., x_{m}}$ and $Y = {y_1, y_2, ..., y_{n}}$ be two sequences of length $m$ and $n$, respectively. The algorithm aims to find the optimal path $\pi = {(i_1,j_1),(i_2,j_2),...,(i_k,j_k)}$ that warps one of the sequences (usually the shorter one) to align with the other sequence. The optimal path $\pi$ is the one that minimizes the total distance between the two sequences, which is defined as:
 
 \begin{equation*}
     DTW(X,Y) = \min_{\pi}\sqrt{\sum_{(i,j) \in \pi}(x_i - y_j)^2}
@@ -166,13 +166,17 @@ In addition to hand angles, the relative distance between the wrist and shoulder
 
 These methods were used instead of relying on the raw landmark data as distance and positioning greatly affect the accuracy of the results. Angles and relative distances are less sensitive to these factors, thus allowing the model to be accurate even if users are positioned differently or are further away.
 
+\subsection{Alternative Data-Capturing Devices}
+
+Aside from an image feed, there are alternative ways to capture data about hand and body positioning. One sign language recognition paper \cite{chuan2014american} used the Leap Motion controller \footnote{http://www.leapmotion.com}, which reports data in a similar format to Mediapipe. There are also similar studies which have been done using other devices, such as the Microsoft Kinect \cite{lang2012sign}, and the Cyberglove \cite{wang2006american}, a The technology can provide more reliable data than images, due to using sensors rather than machine-learning to estimate positions. However, it is sufficient to demonstrate that the model works on a specific format of data, rather than be limited by the device capturing the data. Further work can be undertaken to obtain more accurate results using 3D sensors instead. Moreover, the cost of purchasing such devices is not convenient for the purpose of a Part II project.
+
 \section{Tools and Libraries}
 
 \subsection*{Python}
 
 Python is a popular high-level programming language that is widely used in scientific computing, data analysis, and machine learning applications. Python was chosen as the main language for this project for the following reasons:
 
-Python has a large and active community of developers, which has contributed to a vast ecosystem of libraries and frameworks that can be used for machine learning and computer vision applications. Some of the popular libraries for our project include NumPy, Pandas, Matplotlib, OpenCV, and Scikit-learn. These libraries provide a range of functionalities, such as data manipulation, visualization, and model development, which can significantly simplify and speed up the development of our project.
+Python has a large and active community of developers, which has contributed to a vast ecosystem of libraries and frameworks that can be used for machine learning and computer vision applications. Some of the popular libraries include NumPy, Pandas, Matplotlib, OpenCV, and Scikit-learn. These libraries provide a range of functionalities, such as data manipulation, visualization, and model development, which can significantly simplify and speed up the development of the project.
 
 Moreover, Python is known for its simplicity and ease of use, making it an ideal language for rapid prototyping and experimentation. The syntax of Python is straightforward and easy to learn, making it an excellent choice for beginners who are new to programming. Additionally, Python's rich standard library provides a wide range of built-in functions and modules that can be used to perform various tasks, such as file I/O, networking, and regular expressions.
 
@@ -186,8 +190,6 @@ VSCode has excellent support for Python programming. It comes with a wide range 
 VSCode provides an intuitive and user-friendly interface that makes it easy to navigate and manage the project code. The built-in file explorer allows for quick navigation through project files and directories, while the integrated terminal provides a convenient way to execute commands and scripts directly within the editor, without needing an external terminal.
 
 Another advantage of VSCode is its support for Git, a version control system that is commonly used in software development projects. With VSCode, we can easily integrate Git into our project workflow, allowing us to manage and track changes to the codebase, collaborate with other developers, and maintain project versions, all done in a very user-friendly environment.
-
-Furthermore, VSCode has an extensive ecosystem of plugins and extensions that can be used to enhance its functionality and customize the development environment to suit specific project requirements. For example, we can install extensions for machine learning libraries, such as TensorFlow, and language-related ones, like for Python.
 
 \subsection{OpenCV}
 
@@ -225,15 +227,6 @@ The \verb|fastdtw| library in Python provides an implementation of the FastDTW a
 
 Git was used for version control as this is the system that I am most comfortable with using and familiar with. The repository is hosted on Github and changes were pushed regularly. A copy of this dissertation is also available on Github.
 
-\section{Software Engineering Techniques}
 
-In order to deliver a working model, it is important to integrate proper software engineering techniques. This can speed up the implementation and result in a more robust model, less prone to bugs.
-
-\begin{enumerate}
-
-    \item \textbf{Unit Testing:} Unit testing involves testing individual units or modules of the software to ensure they function as intended. Unit testing can help catch bugs early in the development process and improve the overall quality of the software.
-    \item \textbf{Different Datasets:} This is important for the model to be reliable. Datasets can sometimes cause some features to be too prominent, making it harder to work on real data. It is thus important to check if the model supports other datasets well.
-    \item \textbf{Documentation:} Documentation is important for ensuring that others can understand and use the software effectively. It can include documentation of the code, user manuals, and technical specifications.
-\end{enumerate}
 
 \end{document}
