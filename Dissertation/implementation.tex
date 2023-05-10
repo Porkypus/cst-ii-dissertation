@@ -37,24 +37,24 @@ This section provides an overview of the source code and how the scripts are org
     .1 .
     .2 datasets\DTcomment{Folder to store datasets}.
     .2 models.
-    .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\textbf{72 lines}}.
+    .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\textbf{71 lines}}.
     .3 pose\_model.py\DTcomment{\autoref{sec:pose_model}\quad\textbf{48 lines}}.
     .3 sign\_model.py\DTcomment{\autoref{sec:sign_model}\quad\textbf{76 lines}}.
     .2 utils.
-    .3 bsldict\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{35 lines}}.
-    .3 bsldict\_preprocessing.py\DTcomment{\autoref{sec:data}\quad\textbf{36 lines}}.
+    .3 bsldict\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{37 lines}}.
+    .3 bsldict\_preprocessing.py\DTcomment{\autoref{sec:data}\quad\textbf{38 lines}}.
     .3 compute\_dtw.py\DTcomment{\autoref{sec:dtw-python}\quad\textbf{56 lines}}.
     .3 compute\_fastdtw.py\DTcomment{\autoref{sec:fastdtw}\quad\textbf{45 lines}}.
-    .3 constants.py\DTcomment{\autoref{sec:constants}\quad\textbf{11 lines}}.
-    .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{172 lines}}.
+    .3 constants.py\DTcomment{\autoref{sec:constants}\quad\textbf{13 lines}}.
+    .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{173 lines}}.
     .3 lsa64\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{42 lines}}.
     .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\textbf{67 lines}}.
     .3 performance.py\DTcomment{\autoref{sec:performance}\quad\textbf{37 lines}}.
-    .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{45 lines}}.
+    .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{116 lines}}.
     .3 sign\_recorder.py\DTcomment{\autoref{sec:sign_recorder}\quad\textbf{120 lines}}.
     .3 webcam\_manager.py\DTcomment{\autoref{sec:webcam}\quad\textbf{71 lines}}.
-    .2 eval.py\DTcomment{Script to run test data evaluation\quad\textbf{57 lines}}.
-    .2 main.py\DTcomment{Script to run real-time detection\quad\textbf{47 lines}}.
+    .2 eval.py\DTcomment{Script to run test data evaluation\quad\textbf{64 lines}}.
+    .2 main.py\DTcomment{Script to run real-time detection\quad\textbf{46 lines}}.
 }
 
 
@@ -109,7 +109,7 @@ SSD has been shown to be very effective for object detection. It has achieved st
 
 \subsubsection{Non-Maximum Suppresion}
 
-Non-maximum suppression (NMS) is a technique used in computer vision to eliminate duplicate or redundant detections of the same object in an image. It is commonly used in object detection tasks such as pedestrian detection, face detection, and vehicle detection. The algorithm works by selecting the detection with the highest confidence score and suppressing any overlapping detections that have a lower confidence score.
+Non-maximum suppression (NMS) is a popular technique used in computer vision applications to eliminate duplicate or redundant detections of the same object in an image. It is commonly used in object detection tasks such as pedestrian detection, face detection, and vehicle detection. The algorithm works by selecting the detection with the highest confidence score and suppressing any overlapping detections that have a lower confidence score.
 
 The NMS algorithm can be described mathematically as follows:
 
@@ -313,12 +313,13 @@ The algorithm involves the following operations:
     \item \textit{Refinement}, which is to refine the projected warp path through local adjustments of the warp path.
 \end{enumerate}
 
-\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure 3.9. The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure 3.9, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
+\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure \ref{fig:fastdtw}. The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure \ref{fig:fastdtw}, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
 
 \begin{figure}[H]
     \begin{center}
         \includegraphics[scale=0.9]{images/fastdtw.png}
         \caption{Gradual refinement of warp path as resolution increases}
+        \label{fig:fastdtw}
     \end{center}
 \end{figure}
 
