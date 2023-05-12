@@ -10,20 +10,27 @@
 
 \chapter{Introduction}
 
-\section{Motivation}
+British Sign Language (BSL) is a visual language that is used by around 150,000 people in the UK\footnote{https://bda.org.uk/help-resources/}, many of whom are deaf or hard of hearing. With the advent of technology and accessibility features being introduced, the need for reliable systems to aid individuals who rely on sign language as a means of communication is clear. As the field of sign language recognition is still very much an area of open-research, there are not many systems which are optimised for sign language use. Sign language recognition can be grouped into two distinct groups: isolated sign language and continuous sign language. While isolated sign language involves distinct gestures being performed one at a time, continuous signing involves many gestures performed in quick succession, often merging some signs together.
 
-The motivation behind this project is to improve communication accessibility for individuals who use British Sign Language (BSL). BSL is a visual language that is used by around 150,000 people in the UK, many of whom are deaf or hard of hearing. Despite its prevalence, BSL is not widely understood or recognized by the general population, making communication with individuals who use BSL difficult and often frustrating. Additionally, the project aims to raise awareness and understanding of BSL, and to demonstrate the power of technology to promote accessibility and inclusivity.
+Work has been conducted on the BOBSL\cite{albanie2021bbc} dataset, which is the largest continuous BSL dataset. This data has been scraped from existing footage of programs from the British Broadcasting Corporation (BBC), specifically those using sign language gestures. Despite having the BOBSL dataset, BSL does not have many suitable isolated sign language datasets.
 
-Machine learning and AI models are already common in the field of sign language recognition, but existing datasets are often unsuited for specific model. Lack of enough training data for certain labels is common, due to the sheer number of them available for each different variation of sign language. As such, a model which performs efficiently using low amounts of training data is desired. The model should also be optimised to perform in real-time, as such a use case would more practical for sign language users.
+Outside of BSL, there exists other isolated sign language datasets. The MS-ASL dataset \cite{joze2018ms} is one of the largest datasets for isolated sign language recognition. The study which yielded it also proposed I3D as a novel way of classifying sign gestures. The LSA64 dataset \cite{ronchetti2016lsa64} is another dataset which has been used for evaluating models such as SPOTER \cite{bohavcek2022sign}.
 
-It also important to note that these methods can be extended to other variations of sign language. Some models are optimised for specific variations of sign language, due to its inherent features such as static signing compared to moving ones, and the number of hands involved. The possibility of using other datasets is explored in this project. A basic model used for basic human-action recognition serves as the base case, and sign language recognition is an extension of it.
+However, existing datasets are often unsuited for specific models.  Lack of enough training data for certain labels is common, due to the sheer number of them present in each different variation of sign language. This is true for the dataset used in this project, BSLDict \cite{momeni2020watch}. As such, a model which performs efficiently using low amounts of training data is desired. The model should also be optimised to perform in real-time, as such a use case would more practical for sign language users. Some models are also optimised for specific variations of sign language, due to inherent features such as static signing compared to moving ones, and the number of hands involved. The possibility of using other datasets is explored in this project. A basic model used for basic human-action recognition serves as the base case, and sign language recognition is an extension of it.
 
-\section{Related Work}
+\section{Project Overview and Contributions}
 
-Sign language recognition can be grouped into two distinct parts: isolated sign language and continuous sign language. While isolated sign language involves distinct gestures being performed one at a time, continuous signing involves many gestures performed in quick succession, often merging some signs together.
+The motivation behind this project is to improve communication accessibility for individuals who use BSL. Despite its prevalence, BSL is not widely understood or recognized by the general population, making communication with individuals who use BSL difficult and often frustrating. Additionally, the project aims to raise awareness and understanding of BSL, and to demonstrate the power of technology to promote accessibility and inclusivity.
 
-Work has been conducted on the BOBSL\cite{albanie2021bbc} dataset, which is the largest continuous BSL dataset. This work aimed at improving real-time translation of BSL, which is usually performed with continuous signing.
+The task at hand can be described as follows: Given an input of data representing a sign language gesture in a format such as videos or coordinates, output the most probable sign that could have been performed. We wish to provide a pipeline which can achieve this using a low amount of training data and that can be used in real-time detection.
 
-Although this project focuses primarily on BSL, it is still important to mention other work on other variations of sign language due to the similarities in the main task. The MS-ASL dataset \cite{joze2018ms} is one of the largest datasets for isolated sign language recognition. The study which yielded it also proposed I3D as a novel way of classifying sign gestures. The LSA64 dataset \cite{ronchetti2016lsa64} is another dataset which has been used for evaluating models such as SPOTER \cite{bohavcek2022sign}.
+In this project, I aim to provide a solution by contributing the following:
+\begin{itemize}
+    \item Implementing a reliable sign language recognition model which can accurately recognise different sign language gestures in real-time, specifically isolated gestures.
+    \item Choosing reliable datasets to conduct train the implemented model.
+    \item Verify the accuracy of the model and conduct evaluation of its performance on a range of testing data under different conditions.
+    \item Obtaining feedback from users about the experience of using the model to recognise performed sign gestures.
+    \item Explore different possible extensions that could lead to further work, including possible use cases for continuous sign language and more efficient algorithms.
+\end{itemize}
 
 \end{document}

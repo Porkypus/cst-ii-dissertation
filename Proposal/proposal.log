@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.10.2)  15 JAN 2023 19:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.10.2)  11 MAY 2023 02:01
 entering extended mode
-**"d:/Code/Git Repos/part-ii-dissertation/proposal/proposal.tex"
-(d:/Code/Git Repos/part-ii-dissertation/proposal/proposal.tex
+**"d:/Code/Git Repos/cst-ii-dissertation/Proposal/proposal.tex"
+(d:/Code/Git Repos/cst-ii-dissertation/Proposal/proposal.tex
 LaTeX2e <2021-06-01>
 L3 programming layer <2021-06-01> (C:\Users\porky\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
 Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
@@ -334,14 +334,14 @@ Package rerunfilecheck Info: File `proposal.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  9886 strings out of 478864
- 148505 string characters out of 2848660
+ 148496 string characters out of 2848660
  472073 words of memory out of 3000000
  27676 multiletter control sequences out of 15000+600000
  408013 words of font info for 42 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,7n,80p,851b,321s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,7n,80p,850b,321s stack positions out of 5000i,500n,10000p,200000b,80000s
  <C:\Users\porky\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/porky/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on proposal.pdf (4 pages, 96299 bytes).
+Output written on proposal.pdf (4 pages, 96332 bytes).
 PDF statistics:
  70 PDF objects out of 1000 (max. 8388607)
  13 named destinations out of 1000 (max. 500000)

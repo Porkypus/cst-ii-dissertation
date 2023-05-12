@@ -28,6 +28,16 @@ This chapter gives a background of current research on various sign-language rec
 
 \section{Requirements Analysis}
 
+The task at hand requires a sign language gesture as an input, represented in a suitable format such a video or coordinates. The output should be a prediction of which sign gesture was used as an input.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.85]{images/task.jpg}
+        \caption[caption]{Example pipeline of a sign language recognition model}
+    \end{center}
+\end{figure}
+
+
 The project requires the following to be implemented in order to have a working program:
 
 \begin{itemize}
@@ -39,17 +49,19 @@ The project requires the following to be implemented in order to have a working 
 
 An appropriate dataset is used to perform any form of training or comparison on. Specifically, we target an isolated BSL dataset. However, the nature of sign language in general means that we can expand on different variations of sign language in order to infer how well the model will perform.
 
+
 \section{Datasets}
 
 \subsection*{BSLDict}
 
 BSLDict is a large dataset of isolated BSL gestures \cite{momeni2020watch}. The data has been obtained from BSL sign aggregation platform \textit{signbsl.com}, with a total of 14k video clips for a vocabulary of 9k labels.
 
-The data provides two main issues:
+The data provides three main issues:
 
 \begin{itemize}
     \item \textbf{Lack of examples per label: }A lot of the labels have only one or two videos. This is a problem as there is not enough data for testing or to use deep learning for efficient training.
     \item \textbf{Different signs per label: }Many labels contain ambiguous sign gestures. Some of the labels have different ways to represent them and some overlap with other labels as well. This leads to poor accuracy when trying to train on them.
+    \item \textbf{Ambiguous number of hands: }Many labels contain sign gestures where it is unknown how many hands are used. Some signs have the hand resting within the frame, which can cause issues for models which depend heavily on the position of both hands.
 \end{itemize}
 
 The issue of lacking examples was one reason why DTW was used as an algorithm for this project. As deep learning models require a sufficient amount of training data to be sufficiently accurate, we use a model based on DTW instead as it can retain accuracy with less data.
@@ -63,16 +75,16 @@ The issue of lacking examples was one reason why DTW was used as an algorithm fo
 
 \subsection*{LSA64}
 
-LSA64 is a sign database for isolated Argentian Sign Language (LSA) gestures \cite{ronchetti2016lsa64}. It was created to produce a dictionary for LSA and to be used for training automatic sign recognition models. The dataset contains 3200 videos, with 10 signers executing 5 repetitions of 64 different types of signs.
+LSA64 is a sign database for isolated Argentinian Sign Language (LSA) gestures \cite{ronchetti2016lsa64}. It was created to produce a dictionary for LSA and to be used for training automatic sign recognition models. The dataset contains 3200 videos, with 10 signers executing 5 repetitions of 64 different types of signs.
 
 This dataset was used mostly for initial testing purposes given the issues that were encountered with BSLDict. It provides both sufficient data and consistent signs per label.
 
-Signers wore coloured gloves to aid hand recognition and segmentation, as well as wearing dark clothing. This does not affect this project due to the use of mediapipe to recognise signs.
+Signers wore coloured gloves to aid hand recognition and segmentation, as well as wearing dark clothing. This does not affect this project due to the use of Mediapipe to recognise signs.
 
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[scale=0.15]{images/LSA64.png}
+        \includegraphics[scale=0.2]{images/LSA64.png}
         \caption[caption]{Snapshot from the LSA64 dataset}
     \end{center}
 \end{figure}
@@ -90,9 +102,9 @@ Dynamic Time Warping (DTW) is a well-known algorithm for comparing sequences tha
 
 The basic idea of DTW is to find the optimal alignment between two sequences by warping one of the sequences in the time dimension. The algorithm constructs a distance matrix between the two sequences, where each element represents the distance between a point in the first sequence and a point in the second sequence. The optimal path through this matrix is then found using dynamic programming, which minimizes the total distance between the two sequences.
 
-\begin{figure}
+\begin{figure}[H]
     \begin{center}
-        \includegraphics[scale=0.8]{images/DTW.png}
+        \includegraphics[scale=0.7]{images/DTW.png}
         \caption[caption]{Matrix with warp path}
     \end{center}
 \end{figure}
@@ -103,7 +115,6 @@ Let $X = {x_1, x_2, ..., x_{m}}$ and $Y = {y_1, y_2, ..., y_{n}}$ be two sequenc
 \begin{equation*}
     DTW(X,Y) = \min_{\pi}\sqrt{\sum_{(i,j) \in \pi}(x_i - y_j)^2}
 \end{equation*}
-
 where $(i,j)$ represents a point in the distance matrix.
 
 To find the optimal path $\pi$, the DTW algorithm constructs a distance matrix $D$ of size $m \times n$, where each element $D_{i,j}$ represents the distance between $x_i$ and $y_j$. The matrix is initialized with large values such that $D_{i,j} = \infty$ for all $i$ and $j$. The first element is set to $D_{1,1} = (x_1 - y_1)^2$. Then, for each element $D_{i,j}$, the algorithm finds the minimum distance among the three neighboring elements:
@@ -112,14 +123,9 @@ To find the optimal path $\pi$, the DTW algorithm constructs a distance matrix $
     D_{i,j} = (x_i - y_j)^2 + \min(D_{i-1,j}, D_{i,j-1}, D_{i-1,j-1})
 \end{equation*}
 
-The path through the distance matrix that corresponds to the optimal path $\pi$ is then found by backtracking from the bottom-right corner of the matrix to the top-left corner, following the minimum distance at each step. The resulting path is the optimal path $\pi$, which can be used to align the two sequences.
-
-The time and space complexity of the algorithm are in the quadratic order. In the distance matrix, each cell is filled in exactly once, with each being filled in constant time. That leads to a time and space of complexity of $O(m \times n)$.
-
-\newpage
+The path through the distance matrix that corresponds to the optimal path $\pi$ is then found by backtracking from the bottom-right corner of the matrix to the top-left corner, following the minimum distance at each step. The resulting path is the optimal path $\pi$, which can be used to align the two sequences. The time and space complexity of the algorithm are in the quadratic order. In the distance matrix, each cell is filled in exactly once, with each being filled in constant time. That leads to a time and space of complexity of $O(m \times n)$.
 
 Algorithm 1 is a simple implementation of the DTW algorithm in pseudocode.
-
 \begin{algorithm}
     \caption{Simple DTW algorithm}
     \SetKwFunction{isOddNumber}{isOddNumber}
@@ -152,13 +158,11 @@ Algorithm 1 is a simple implementation of the DTW algorithm in pseudocode.
 
 DTW has been shown to be an effective algorithm for comparing sequences in many applications, but it has some limitations. One of the main limitations is its computational complexity, which is quadratic in the length of the sequences. This can be a problem for very long sequences or for applications that require real-time processing. In recent years, there have been many extensions and variations of DTW that aim to overcome some of these limitations \cite{ratanamahatana2004everything}.
 
-
-
 \subsection{Feature Extraction}
 
 Feature extraction is a crucial step in sign language recognition systems as it enables the conversion of raw video data into meaningful and informative representations that can be used for classification purposes. In this section, we discuss the feature extraction process used in our sign language recognition project, which involves the extraction of hand and body pose landmarks and the calculation of hand angles and relative distance features.
 
-The project employed Mediapipe Holistic, an open-source library developed by Google, to extract landmarks from the hand and body poses in the sign language videos. This library provides a robust and accurate solution for the detection of body and hand keypoints, including wrist, elbow, shoulder, and finger joints. Specifically, we used the pre-trained Holistic model, which uses a deep neural network to detect the keypoints and estimate their positions in real-time.
+The project employed Mediapipe Holistic, an open-source library developed by Google, to extract landmarks from the hand and body poses in the sign language videos. This library provides a robust and accurate solution for the detection of body and hand keypoints, including wrist, elbow, shoulder, and finger joints. Specifically, we used the pre-trained Holistic model, which uses a deep neural network to detect the keypoints and estimate their positions in real-time. More details about Mediapipe are described in both Section \ref{sec:mediapipe-holistic} and Section \ref{sec:mediapipe}.
 
 From the extracted landmarks, angles between each of the 21 hand landmarks were calculated for each hand. This resulted in 441 angles, which captured the intricate hand movements and positions that are characteristic of sign language gestures. These angles were calculated using the law of cosines and were normalized to ensure consistency across different signers and videos.
 
@@ -168,7 +172,7 @@ These methods were used instead of relying on the raw landmark data as distance 
 
 \subsection{Alternative Data-Capturing Devices}
 
-Aside from an image feed, there are alternative ways to capture data about hand and body positioning. One sign language recognition paper \cite{chuan2014american} used the Leap Motion controller \footnote{http://www.leapmotion.com}, which reports data in a similar format to Mediapipe. There are also similar studies which have been done using other devices, such as the Microsoft Kinect \cite{lang2012sign}, and the Cyberglove \cite{wang2006american}, a The technology can provide more reliable data than images, due to using sensors rather than machine-learning to estimate positions. However, it is sufficient to demonstrate that the model works on a specific format of data, rather than be limited by the device capturing the data. Further work can be undertaken to obtain more accurate results using 3D sensors instead. Moreover, the cost of purchasing such devices is not convenient for the purpose of a Part II project.
+Aside from an image feed, there are alternative ways to capture data about hand and body positioning. One sign language recognition paper \cite{chuan2014american} used the Leap Motion controller \footnote{http://www.leapmotion.com}, which reports data in a similar format to Mediapipe. There are also similar studies which have been done using other devices, such as the Microsoft Kinect \cite{lang2012sign}, and the Cyberglove \cite{wang2006american}. The technology can provide more reliable data than images, due to using sensors rather than machine-learning to estimate positions. However, it is sufficient to demonstrate that the model works on a specific format of data, rather than be limited by the device capturing the data. Further work can be undertaken to obtain more accurate results using 3D sensors instead. Moreover, the cost of purchasing such devices is unsuitable for the purpose of a Part II project.
 
 \section{Tools and Libraries}
 
@@ -201,9 +205,10 @@ OpenCV supports various programming languages, including Python, C++, and Java, 
 
 It also has built-in support for hardware acceleration, which can be useful given that the project requires real-time performance as a requirement for the success criteria.
 
-Finally, it is one of the most popular libraries for this purpose, being used by a lot of projects in the field of computer vision. It is well-documented and has a lot of support available on its website.
+Finally, it is one of the most popular libraries for this purpose, being used by a lot of projects in the field of computer vision. It is well documented and has a lot of support available on its website.
 
 \subsection{Mediapipe-Holistic}
+\label{sec:mediapipe-holistic}
 
 Mediapipe Holistic is an open-source library developed by Google that provides a suite of real-time, multi-person pose estimation and tracking solutions. It uses machine learning models to detect and track multiple key points on the human body, including facial landmarks, hand landmarks, and body pose, which can be used for a wide range of applications, including sign language recognition. In this section, we discuss why Mediapipe Holistic is suitable for this project.
 
@@ -218,6 +223,7 @@ Additionally, Mediapipe Holistic is an open-source library, which means that it 
 The \verb|dtw-python| library is a Python implementation of the DTW algorithm, which provides a set of functions for computing the DTW distance between two time series data sequences. The library provides an efficient implementation of the DTW algorithm that can handle sequences of different lengths and allows for the customization of the distance function used to compute the DTW distance.
 
 \subsection{FastDTW}
+\label{sec:prepfastdtw}
 
 FastDTW is a variant of the DTW algorithm that trades accuracy for faster computation times \cite{salvador2007toward}. It works by reducing the number of elements that need to be computed in the distance matrix, resulting in a smaller memory footprint and faster computation times.
 

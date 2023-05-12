@@ -27,6 +27,33 @@ In this chapter, the overall implementation of the project will be described, me
 
 There are many scripts which when combined together, achieve those processes. The project makes use of objects to make the code reusable and to easily be able to expand it.
 
+The implementation of this project is based on an existing implementation\footnote{https://github.com/gabguerin/Sign-Language-Recognition--MediaPipe-DTW}. Methods to integrate pose recognition and to process the datasets have been added to make the model more accurate, and alternative similarity algorithms were also used.
+
+\subsection*{Licensing}
+
+Below is a table showing what licenses that software and libraries involved in this project use:
+
+\rowcolors{2}{gray!5}{gray!30}
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ c|c }
+            \hline
+            Software                   & License    \\
+            \hline
+            Python 3.10.5              & PSFL       \\
+            NumPy                      & PSFL       \\
+            pandas                     & PSFL       \\
+            Mediapipe                  & Apache 2.0 \\
+            dtw-python                 & GNUv2+     \\
+            fastdtw                    & MIT        \\
+            gabguerin's implementation & MIT        \\
+
+            \hline
+        \end{tabular}
+    \end{center}
+    \label{tab:licensing}
+\end{table}
+
 \section{Repository Overview}
 
 This section provides an overview of the source code and how the scripts are organised in the repository. The project has been organised such that it is easy to add new datasets and to train on them, provided a new script to process it is written.
@@ -37,31 +64,31 @@ This section provides an overview of the source code and how the scripts are org
     .1 .
     .2 datasets\DTcomment{Folder to store datasets}.
     .2 models.
-    .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\textbf{71 lines}}.
-    .3 pose\_model.py\DTcomment{\autoref{sec:pose_model}\quad\textbf{48 lines}}.
-    .3 sign\_model.py\DTcomment{\autoref{sec:sign_model}\quad\textbf{76 lines}}.
+    .3 hand\_model.py\DTcomment{\autoref{sec:hand_model}\quad\quad\textbf{71 lines}}.
+    .3 pose\_model.py\DTcomment{\autoref{sec:pose_model}\quad\quad\textbf{48 lines}}.
+    .3 sign\_model.py\DTcomment{\autoref{sec:sign_model}\quad\quad\textbf{76 lines}}.
     .2 utils.
-    .3 bsldict\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{37 lines}}.
-    .3 bsldict\_preprocessing.py\DTcomment{\autoref{sec:data}\quad\textbf{38 lines}}.
-    .3 compute\_dtw.py\DTcomment{\autoref{sec:dtw-python}\quad\textbf{56 lines}}.
-    .3 compute\_fastdtw.py\DTcomment{\autoref{sec:fastdtw}\quad\textbf{45 lines}}.
-    .3 constants.py\DTcomment{\autoref{sec:constants}\quad\textbf{13 lines}}.
-    .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{173 lines}}.
-    .3 lsa64\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\textbf{42 lines}}.
-    .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\textbf{67 lines}}.
-    .3 performance.py\DTcomment{\autoref{sec:performance}\quad\textbf{37 lines}}.
-    .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{116 lines}}.
-    .3 sign\_recorder.py\DTcomment{\autoref{sec:sign_recorder}\quad\textbf{120 lines}}.
-    .3 webcam\_manager.py\DTcomment{\autoref{sec:webcam}\quad\textbf{71 lines}}.
-    .2 eval.py\DTcomment{Script to run test data evaluation\quad\textbf{64 lines}}.
-    .2 main.py\DTcomment{Script to run real-time detection\quad\textbf{46 lines}}.
+    .3 bsldict\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\quad\textbf{37 lines}}.
+    .3 bsldict\_preprocessing.py\DTcomment{\autoref{sec:data}\quad\quad\textbf{38 lines}}.
+    .3 compute\_dtw.py\DTcomment{\autoref{sec:dtw-python}\quad\quad\textbf{56 lines}}.
+    .3 compute\_fastdtw.py\DTcomment{\autoref{sec:fastdtw}\quad\quad\textbf{45 lines}}.
+    .3 constants.py\DTcomment{\autoref{sec:constants}\quad\quad\textbf{13 lines}}.
+    .3 feature\_extraction.py\DTcomment{\autoref{sec:feature}\quad\textbf{ 173 lines}}.
+    .3 lsa64\_data\_processing.py\DTcomment{\autoref{sec:data}\quad\quad\textbf{42 lines}}.
+    .3 mediapipe\_utils.py\DTcomment{\autoref{sec:mediapipe}\quad\quad\textbf{67 lines}}.
+    .3 performance.py\DTcomment{\autoref{sec:performance}\quad\quad\textbf{37 lines}}.
+    .3 sign\_eval.py\DTcomment{\autoref{sec:sign_eval}\quad\textbf{ 116 lines}}.
+    .3 sign\_recorder.py\DTcomment{\autoref{sec:sign_recorder}\quad\textbf{ 120 lines}}.
+    .3 webcam\_manager.py\DTcomment{\autoref{sec:webcam}\quad\quad\textbf{71 lines}}.
+    .2 eval.py\DTcomment{Script to run test data evaluation\quad\quad\textbf{64 lines}}.
+    .2 main.py\DTcomment{Script to run real-time detection\quad\quad\textbf{46 lines}}.
 }
 
-
+\newpage
 \section{Data Pre-processing}
 \label{sec:data}
 
-The model needs the data to be in a a required format in order to process it. As such, we need to pre-process existing datasets in order to make them suitable.
+The model needs the data to be in a required format in order to process it. As such, we need to pre-process existing datasets in order to make them suitable.
 
 We order the videos by having a directory for each label, containing all videos which fall under that corresponding label. This is illustrated as follows:
 \bigskip
@@ -76,8 +103,8 @@ We order the videos by having a directory for each label, containing all videos 
     .3 Appear-1.mp4.
 }
 \bigskip
-The scripts \verb|bsldict_data processing.py | and \verb|lsa64_data_processing.py| process their respective datasets to obtain it in such a format. \\
-Note that \verb|bsldict_preprocessing.py| is used first if we wish to filter labels which have more than a minimum number of videos.
+The scripts \verb|bsldict_data processing.py| and \verb|lsa64_data_processing.py| process their respective datasets to obtain it in such a format.  \\
+\verb|bsldict_preprocessing.py| is a script used if we wish to filter labels which have more than a minimum number of videos. For example, it can be used to filter the dataset by getting all labels which have at least 10 videos.
 \section{Mediapipe Extraction}
 \label{sec:mediapipe}
 
@@ -88,6 +115,20 @@ Using our datasets, we now need to extract information from them. This is done b
 Mediapipe Holistic is the model that outputs the needed data to start the feature extraction process.
 
 Mediapipe Holistic utilizes a deep neural network model that is trained on a large dataset of labeled images and videos. The model is designed to recognize various human poses, hand gestures, and facial landmarks, and it achieves this by analyzing the pixels of the input image or video stream \cite{grishchenko_bazarevsky_2020}. Mediapipe Holistic provides three tracking pipelines, namely for the face, hands, and pose. The latter two are of relevance to this project.
+
+\subsection{Mediapipe Pipeline}
+
+One problem with using multiple separate models is that each is optimised for their specific purposes \cite{grishchenko_bazarevsky_2020}. For example, the pose estimation model requires a $256 \times 256$ input video frame. However, cropping the hand and face from this frame to feed their respective models results in an input which has a too low resolution to obtain accurate landmarks.
+
+To solve this, Mediapipe Holistic uses a multistage pipeline. First, the human pose is estimated using the pose pipeline. Using the inferred pose landmarks, it then derives the regions of interest (ROI) for the face and hands, employing a recrop model along the way to improve it. The ROIs are then passed into the respective models to obtain the remaining landmarks.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/holistic_pipeline.png}
+        \caption[caption]{Pipeline Overview (Image from mediapipe.dev)}
+    \end{center}
+\end{figure}
+
 
 \subsection{Hands Detection Pipeline}
 
@@ -105,7 +146,7 @@ After the bounding boxes and confidence scores have been predicted, they are use
 
 After NMS has been applied, the remaining boxes are then classified using a softmax classifier. The softmax classifier outputs a probability distribution over the set of object classes. The class with the highest probability is then assigned to the box.
 
-SSD has been shown to be very effective for object detection. It has achieved state-of-the-art results on a number of benchmark datasets, including the PASCAL VOC dataset and the COCO dataset. SSD is also very fast, making it suitable for real-time object detection applications.
+SSD has been shown to be very effective for object detection. It has achieved state-of-the-art results on a number of benchmark datasets, including the PASCAL VOC dataset \cite{everingham2010pascal} and the COCO dataset \cite{lin2014microsoft}. SSD is also very fast, making it suitable for real-time object detection applications.
 
 \subsubsection{Non-Maximum Suppresion}
 
@@ -145,21 +186,6 @@ To achieve accurate pose estimation, a combined heatmap, offset, and regression 
 
 To achieve a balance between high- and low-level features, skip-connections are actively utilized between all the stages of the network. However, the gradients from the regression encoder are not propagated back to the heatmap-trained features. This approach not only improves the heatmap predictions but also substantially increases the coordinate regression accuracy.
 
-\subsection{Mediapipe Pipeline}
-
-One problem with using multiple separate models is that each is optimised for their specific purposes \cite{grishchenko_bazarevsky_2020}. For example, the pose estimation model requires a $256 \times 256$ input video frame. However, cropping the hand and face from this frame to feed their respective models results in an input which has a too low resolution to obtain accurate landmarks.
-
-To solve this, Mediapipe Holistic uses a multistage pipeline. First, the human pose is estimated using the pose pipeline. Using the inferred pose landmarks, it then derives the regions of interest (ROI) for the face and hands, employing a recrop model along the way to improve it. The ROIs are then passed into the respective models to obtain the remaining landmarks.
-
-\newpage
-
-\begin{figure}[H]
-    \begin{center}
-        \includegraphics[width=\textwidth]{images/holistic_pipeline.png}
-        \caption[caption]{Pipeline Overview}
-    \end{center}
-\end{figure}
-
 \subsection{Mediapipe Implementation}
 
 The goal here is to obtain the position of the different connections between joints.
@@ -174,34 +200,29 @@ The goal here is to obtain the position of the different connections between joi
 
 
 
-\section{Feature Extraction}
+\section{Features and Reference Signs Representation}
 \label{sec:feature}
 
-Once a list of connections from mediapipe has been obtained, we want to store this data in a suitable format and be able to reload them. The \verb|feature_extraction| script provides a range of methods to do so. The initial training stage involves obtaining a collection of reference signs. These are what the recorded signs will be compared to to evaluate similarity.
+Once a list of connections from Mediapipe has been obtained, we want to store this data in memory in a suitable format and be able to reload them. This will serve as the raw training data. The \verb|feature_extraction| script provides a range of methods to do so. The initial training stage involves obtaining a collection of reference signs. These are what the recorded signs will be compared to to evaluate similarity.
 
 \subsection{Extract to Pickle Files}
 
-Initially, the \verb|extract_features| method is used to obtain the landmarks from the data in our training folder. Every video is scanned and the relevant data extracted by mediapipe is stored in pickle files.
+Initially, the \verb|extract_features| method is used to obtain the landmarks from the data in our training folder. Every video is scanned and the relevant data extracted by Mediapipe is stored in pickle files.
 
 We use this opportunity here to also extract the data of the laterally-inverse of the frames. The reason for this is to obtain the features of the sign performed in a left-handed manner. In BSL, the leading hand used to perform the signing determines the handedness of the sign. Thus, flipping the image is sufficient to obtain the relevant data.
 
 Each training video has two entries corresponding to it: its own extracted data and its flipped data. Each entry contains a pickle file for each hand and the pose, which is essentially an array of landmarks.
 
-\subsection{Loading Reference Signs}
 
-To perform predictions, the reference data needs to be loaded for the session. The \verb|load_reference_signs| method is used to iterate through the entries containing the pickle files. For each entry, we initialise a new \verb|sign_model| object, which is itself initialised with the respective \verb|hand_model| and \verb|pose_model| objects constructed from the data stored in the pickle files.
-
-For efficiency, we use a \verb|pandas.DataFrame| to store the name of the sign, its respective \verb|sign_model|, and a distance initialised to 0. This will be overwritten when computing the distances.
-
-\section{Models}
+\subsection{Models}
 \label{sec:models}
 
 The project uses three models to represent features extracted from the vectors provided by Mediapipe Holistic.
 
-\subsection{Hand Model}
+\subsubsection{Hand Model}
 \label{sec:hand_model}
 
-The \verb|hand_model| class creates objects that store the feature vector representing all the angles between the connections provided by mediapipe on an arbitrary hand. Mediapipe provides 21 connections per hand, resulting in a feature vector of $21 * 21 = 441$ angles. We use the dot product formula to obtain the angle given two vectors (See Figure 3.2):
+The \verb|hand_model| class creates objects that store the feature vector representing all the angles between the connections provided by Mediapipe on an arbitrary hand. Mediapipe provides 21 connections per hand, resulting in a feature vector of $21 * 21 = 441$ angles. We use the dot product formula to obtain the angle given two vectors (See Figure 3.2):
 
 \begin{equation*}
     \theta = cos^{-1}\Big(\frac{a \cdot b}{|a| |b|}\Big) \text{, where $a$ and $b$ represent connections}
@@ -211,16 +232,16 @@ The model only represents one particular frame, given a sequence of them. The fi
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[scale=0.7]{images/hand_landmarks.png}
-        \caption{The angles on the mediapipe connection drawing}
+        \includegraphics[scale=0.6]{images/hand_landmarks.png}
+        \caption{The angles on the Mediapipe connection drawing}
     \end{center}
 \end{figure}
 
 
-\subsection{Pose Model}
+\subsubsection{Pose Model}
 \label{sec:pose_model}
 
-The \verb|pose_model| takes a different approach. Instead of using angles, we use the distance between the shoulder and elbow as a normalisation distance, normalising coordinates provided by mediapipe. This is because the pose landmarks also include those of the lower body, including the legs. Hence, we only use the landmarks of the shoulder, elbows and wrist, as they are more likely to be present in the frames. Taking $a$ and $b$ as the position vectors representing the shoulder and elbow respectively, we obtain the new coordinates as follows:
+The \verb|pose_model| takes a different approach. Instead of using angles, we use the distance between the shoulder and elbow as a normalisation distance, normalising coordinates provided by Mediapipe. This is because the pose landmarks also include those of the lower body, including the legs. Hence, we only use the landmarks of the shoulder, elbows and wrist, as they are more likely to be present in the frames. Taking $a$ and $b$ as the position vectors representing the shoulder and elbow respectively, we obtain the new coordinates as follows:
 \begin{equation*}
     v_i = \frac{u_i}{|b - a|} \text{, for every coordinate $u$ in the pose landmarks}
 \end{equation*}
@@ -232,7 +253,7 @@ The \verb|pose_model| takes a different approach. Instead of using angles, we us
     \end{center}
 \end{figure}
 
-\subsection{Sign Model}
+\subsubsection{Sign Model}
 \label{sec:sign_model}
 
 The \verb|sign_model| object stores the hand and pose models for each frame in the sequence representing the sign, essentially being the representation of the sign as its features. This is what is compared when computing the similarity between a reference sign and a recorded sign.
@@ -245,6 +266,12 @@ Each object contains the following attributes:
     \item \verb|left_arm_embedding| and \verb|right_arm_embedding|, which are the lists of feature vectors for each frame for each arm.
 \end{itemize}
 
+\subsection{Loading Reference Signs}
+
+To perform predictions, the reference data stored (Section \ref{sec:feature}) needs to be loaded for the session. The \verb|load_reference_signs| method is used to iterate through the entries containing the pickle files. For each entry, we initialise a new \verb|sign_model| object, which is itself initialised with the respective \verb|hand_model| and \verb|pose_model| objects constructed from the data stored in the pickle files.
+
+For efficiency, we use a \verb|pandas.DataFrame| to store the name of the sign, its respective \verb|sign_model|, and a distance initialised to 0. This will be overwritten when computing the distances.
+
 \section{Computing Similarity}
 
 The project provides two scripts for computing similarity: \verb|compute_dtw| and\newline \verb|compute_fastdtw|, which use the \verb|dtw-python|\cite{giorgino2009computing} and \verb|fastdtw| \cite{salvador2007toward} libraries respectively. The project provides an easy way to toggle between the two algorithms.
@@ -256,16 +283,16 @@ The outline of the DTW algorithm is mentioned in Section 2.3.2. The implementati
 
 The \verb|dtw_distances| method is what fills the \verb|pandas.DataFrame| with distances. It takes the DataFrame as an argument along with the sign model representing the recorded sign. The embeddings of the sign model are extracted to variables as they are the sequences to be compared.
 
-The model starts iterating through every sign present in the DataFrame. It discards those which do not have the same hands present in the recorded sign and sets their distances as $\inf$ in the distance column of the DataFrame. The \verb|dtw| method from \verb|dtw-python| \cite{giorgino2009computing} is then called with the respective embeddings of the reference and recorded sign as arguments. The distance obtained is then set in the corresponding entry of the DataFrame.
+The model starts iterating through every sign present in the DataFrame. It discards those which do not have the same hands present in the recorded sign and sets their distances to infinity in the distance column of the DataFrame. The \verb|dtw| method from \verb|dtw-python| \cite{giorgino2009computing} is then called with the respective embeddings of the reference and recorded sign as arguments. The distance obtained is then set in the corresponding entry of the DataFrame.
 
 
 \subsubsection{Challenges Faced}
 
-The \verb|dtw| method handles the case of having a sequence of length 1 differently. In such a case, it transposes the array. This happened in a few instances on training due to some signs registering a particular hand in only one frame. This is dependent on the confidence tracking of mediapipe. As such, this specific case is handled by duplicating the singular entry present in the sequence to obtain an array of length 2.
+The \verb|dtw| method handles the case of having a sequence of length 1 differently. In such a case, it transposes the array. This happened in a few instances on training due to some signs registering a particular hand in only one frame. This is dependent on the confidence tracking of Mediapipe. As such, this specific case is handled by duplicating the singular entry present in the sequence to obtain an array of length 2.
 
 \subsection{fastdtw}
 \label{sec:fastdtw}
-A high-level overview of the FastDTW algorithm is given in Section 2.4.5. This section will provide a detailed overview of the algorithm, as outlined in the paper proposing it \cite{salvador2007toward} and also cover the implementation, which was done using the \verb|fastdtw| library.
+A high-level overview of the FastDTW algorithm is given in Section \ref{sec:prepfastdtw}. This section will provide a detailed overview of the algorithm, as outlined in the paper proposing it \cite{salvador2007toward} and also cover the implementation, which was done using the \verb|fastdtw| library.
 
 \subsubsection{Speeding up DTW}
 
@@ -304,7 +331,7 @@ This method speeds up the algorithm by a constant factor as well, but the overal
 
 \subsubsection{Algorithm Description}
 
-The algorithm is based on graph bisection \cite{karypis1997multilevel}, which involves splitting a graph into smaller parts, roughly equivalent. The goal is to minimise the sum of the edges that would be broken. A multi-level approach aims at correcting large graphs with the solutions from smaller ones, in a dynamic-programming fashion. FastDTW uses this to find an accurate warp path.
+The algorithm is based on graph bisection \cite{karypis1997multilevel}, which involves splitting a graph into smaller, roughly equivalent parts. The goal is to minimise the sum of the edges that would be broken. A multi-level approach aims at correcting large graphs with the solutions from smaller ones, in a dynamic-programming fashion. FastDTW uses this to find an accurate warp path.
 
 The algorithm involves the following operations:
 \begin{enumerate}
@@ -313,7 +340,11 @@ The algorithm involves the following operations:
     \item \textit{Refinement}, which is to refine the projected warp path through local adjustments of the warp path.
 \end{enumerate}
 
-\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series. \textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure \ref{fig:fastdtw}. The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure \ref{fig:fastdtw}, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
+\textit{Coarsening} is used to generate many different resolutions of the matrix, each of them gradually decreasing by a factor of 2 starting from the original time series.
+
+\textit{Projection} is then used to find the warp path on the lowest resolution matrix. This is then projected on the next lowest-resolution matrix. This is represented as the dark-shaded cells in Figure \ref{fig:fastdtw}.
+
+The dark-shaded cells are used as a window for the next run of DTW, being used as a constraint in the \textit{Refinement} step. This does not guarantee that the optimal global path will be present within that constraint, but the accuracy can be increased by increasing the \textit{radius} of the projected warp path. In Figure \ref{fig:fastdtw}, lightly-shaded cells represent those included in the window, with the \textit{radius} parameter set to 1.
 
 \begin{figure}[H]
     \begin{center}
@@ -376,7 +407,7 @@ The \verb|get_sign_predicted| method takes an argument for \verb|batch_size|. Th
     l = \max\Big(\frac{l_i}{N}\Big) \text{, for $0 \leq i < N$}
 \end{equation*}
 
-$N$ corresponds to the chosen \verb|batch_size|. A reasonable upper bound for $N$ can be obtained by considering the label in the training data with the least amount of examples. This ensures that every label has the possibility of achieving a confidence of 100\%.
+$N$ corresponds to the chosen \verb|batch_size|. A reasonable upper bound for $N$ can be obtained by considering the label in the training data with the fewest amount of examples. This ensures that every label has the possibility of achieving a confidence of 100\%.
 
 The threshold argument is used to determine if a sign is common enough to be output with a certain minimum confidence. It is defined as the minimum ratio of appearances to the batch size that a sign needs to achieve in order to be output.
 The model outputs ``Unknown Sign'' if the threshold is not met.
@@ -431,7 +462,7 @@ A hand and pose model will be generated for each frame and they are all stored i
 \verb|BATCH_SIZE| is an integer representing the batch size mentionned in Section \ref{sec:batch}. This can be tweaked according to the data being trained on.
 \verb|THRESHOLD| is an integer representing the threshold mentionned in Section \ref{sec:batch}. Changing this value will affect the confidence of the model.
 \verb|DATA_PATH|, \verb|TEST_PATH|, and \verb|FEATURE_PATH| are constants which dictate where training videos, test videos, and keypoint data are stored.
-\verb|mappings| is a dictionary which is used to process the LSA64 dataset, associating its corresponding labels by id.
+\verb|mappings| is a dictionary which is used to process the LSA64 dataset, associating its corresponding labels by Id.
 
 
 \end{document}

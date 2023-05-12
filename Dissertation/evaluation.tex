@@ -17,7 +17,7 @@
 
 \chapter{Evaluation}
 
-This chapter describes the results obtained, as well as the evaluation methods and metrics used. Possible optimisations and relevant factors affecting accuracy are also discussed. The testing for all datasets involves few labels, due to the hardware limitations (Not enough memory to load all reference signs at the same time).
+This chapter describes the results obtained, as well as the evaluation methods and metrics used. Possible optimisations and relevant factors affecting accuracy are also discussed. The testing for all datasets involves few labels, due to the hardware limitations (not enough memory to load all reference signs at the same time). The key results are that the model yields high accuracy on both datasets, similar to other models that have been evaluated on the same datasets. It is important to note that the model does not perform well when presented with signs that it has not been trained on, and when the training data has an ambiguous number of hands present in them.
 
 \section{LSA64 Results}
 
@@ -70,7 +70,7 @@ The overall accuracy was 78\% for both \verb|dtw-python| and \verb|fastdtw|. The
                 ]
                 \addplot coordinates {(Accept,10) (Appear,6) (Argentina,10) (Away,10) (Barbecue,3)};
                 \addplot coordinates {(Accept,10) (Appear,5) (Argentina,10) (Away,10) (Barbecue,4)};
-                \legend{dtw-pythn, fastdtw}
+                \legend{dtw-python, fastdtw}
             \end{axis}
         \end{tikzpicture}
     \end{center}
@@ -81,7 +81,7 @@ The overall accuracy was 78\% for both \verb|dtw-python| and \verb|fastdtw|. The
 \verb|Appear| and \verb|Barbecue| seem to perform poorly on both implementations. They both involve two hands, but Accept does as well and performs very well nevertheless. Other factors that might affect the accuracy could include:
 
 \begin{itemize}
-    \item \verb|Appear| is executed relatively fast, and part of the hand is hidden during the execution of the sign. This could be affecting with the mediapipe detection.
+    \item \verb|Appear| is executed relatively fast, and part of the hand is hidden during the execution of the sign. This could be affecting the mediapipe detection.
     \item \verb|Barbecue| uses both hands in a horizontal position. This seems to make it hard for mediapipe to locate the landmarks for the hands.
     \item The model might be biased in favour of \verb|Accept| due to an inherent feature of the sign gesture. This would make it seem more accurate, even if the model was predicting it for other signs.
 \end{itemize}
@@ -113,7 +113,7 @@ The \verb|dtw-python| implementation had an accuracy of 80\%, whereas the \verb|
                 ]
                 \addplot coordinates {(Accept,10) (Appear,7) (Argentina,10) (Away,10) (Barbecue,3)};
                 \addplot coordinates {(Accept,7) (Appear,5) (Argentina,10) (Away,10) (Barbecue,4)};
-                \legend{dtw-pythn, fastdtw}
+                \legend{dtw-python, fastdtw}
             \end{axis}
         \end{tikzpicture}
     \end{center}
@@ -150,7 +150,7 @@ The \verb|dtw-python| implementation had an accuracy of 94\%, whereas the \verb|
                 ]
                 \addplot coordinates {(Accept,10) (Appear,9) (Argentina,10) (Away,10) (Barbecue,8)};
                 \addplot coordinates {(Accept,6) (Appear,6) (Argentina,10) (Away,10) (Barbecue,5)};
-                \legend{dtw-pythn, fastdtw}
+                \legend{dtw-python, fastdtw}
             \end{axis}
         \end{tikzpicture}
     \end{center}
@@ -159,6 +159,10 @@ The \verb|dtw-python| implementation had an accuracy of 94\%, whereas the \verb|
 \end{figure}
 
 Accuracy is higher overall for this training set. We note the same lower accuracy for \verb|fastdtw| when it comes to two-handed signs and the same bias against \verb|Appear| and \verb|Barbecue|.
+
+\subsubsection{Overall}
+
+The results are similar for all conditions, with \verb|dtw-python| being affected more by the change in training data as opposed to \verb|fastdtw|, which stayed pretty consistent. The fact that certain signs performed consistently well and some did not get recognised as much indicates that features inherent to the signs are more likely to be the problem rather than the implementation. It is also possible that the pipeline is less suitable for such signs.
 
 \subsection{Left-handed Videos Testing}
 
@@ -169,7 +173,7 @@ The model supports left-handed detection as well, even when trained on right-han
         \begin{tikzpicture}
             \pgfplotsset{%
                 width=.8\textwidth,
-                height=.45\textwidth
+                height=.6\textwidth
             }
             \begin{axis}
                 [
@@ -184,7 +188,7 @@ The model supports left-handed detection as well, even when trained on right-han
                 ]
                 \addplot coordinates {(Accept,8) (Appear,6) (Argentina,10) (Away,10) (Barbecue,5)};
                 \addplot coordinates {(Accept,7) (Appear,6) (Argentina,10) (Away,9) (Barbecue,6)};
-                \legend{dtw-pythn, fastdtw}
+                \legend{dtw-python, fastdtw}
             \end{axis}
         \end{tikzpicture}
     \end{center}
@@ -192,7 +196,7 @@ The model supports left-handed detection as well, even when trained on right-han
     \label{bar:left}
 \end{figure}
 
-We note similar results to that obtained by the model as seen in the previous sections. The overall accuracy seems to be slightly lower, despite using flipped frames for training.
+We note similar results to that obtained by the model as seen in the previous sections. The overall accuracy seems to be slightly lower, despite using flipped frames for training. The differences in the results can be explained by the fact that the layout of the coordinates extracted from mediapipe for a flipped video is not identical to that of coordinates extracted from a non-flipped video.
 
 \section{BSLDict Results}
 \label{sec:bsldictresults}
@@ -268,6 +272,8 @@ The results can be compared to similar studies that have been done on the same d
     \label{tab:studies}
 \end{table}
 
+We can see that the \verb|dtw-python| implementation performs nearly as well as SPOTER and Inception V3. \verb|fastdtw| is seen to yield less accurate results. One advantage of the model proposed is that it can yield accurate results using a fraction of what the other models are trained on.
+
 \section{User Study}
 
 As this project involves real-time detection, a user study was conducted to measure the usability of the model in real-time and to also evaluate its accuracy on a wider range of users in real-life circumstances. The aim of the user study was to establish if the model was suitable to be used for real-time detection and if the \verb|fastdtw| implementation was faster than the \verb|dtw-python| implementation.
@@ -285,14 +291,14 @@ A group of 5 participants took turns performing sign language gestures that the 
 
 \subsection{LSA64 Testing}
 
-The model was trained on the same videos as the ones used for the \textit{10 videos per label} section in Subsection \ref{sec:tenvid}. Each user performed 10 repetitions of each sign, 5 for each implementation. This leads to a total of 50 repetitions.The results obtained are illustrated below:
+The model was trained on the same videos as the ones used for the \textit{10 videos per label} section in Subsection \ref{sec:tenvid}. Each user performed 10 repetitions of each sign, 5 for each implementation. This leads to a total of 50 repetitions. The results obtained are illustrated below:
 
 \begin{figure}[H]
     \begin{center}
         \begin{tikzpicture}
             \pgfplotsset{%
                 width=.8\textwidth,
-                height=.45\textwidth
+                height=.5\textwidth
             }
             \begin{axis}
                 [
@@ -353,11 +359,30 @@ The model was trained on the same videos as in Section \ref{sec:bsldictresults}.
     \label{bar:bsldictuser}
 \end{figure}
 
-Users obtained less accurate results, with the \verb|dtw-python| implementation having an overall accuracy of 80.8\%, and 80.0\% for the \verb|fastdtw|. The principle reason for the low accuracy was the \verb|Pick| sign, which had an overall accuracy of 16\%, correlating with results obtained in Section \ref{sec:bsldictresults}. The reasons for this should be the same as well, and we can also exclude the possibility of the bias to be due to a specific user as well.
+Users obtained less accurate results, with the \verb|dtw-python| implementation having an overall accuracy of 80.8\%, and 80.0\% for the \verb|fastdtw|. The principal reason for the low accuracy was the \verb|Pick| sign, which had an overall accuracy of 16\%, correlating with results obtained in Section \ref{sec:bsldictresults}. The reasons for this are likely the same, and we can also exclude the possibility of the bias to be due to a specific user as well.
 
 \subsection{User Feedback}
 
-Users gave qualitative feedback on the evaluation process used for the user study. The overall opinion leaned towards needing to hold the signs for some period on time for signs in the LSA64 dataset, and the inaccuracy of \verb|Pick| for the BSLDict dataset. Users also did not find the need to hide the non-signing hand for single-handed signs intuitive, and would rather have both hands present on the webcam feed.
+Users gave qualitative feedback on the evaluation process used for the user study. The overall opinion leaned towards needing to hold the signs for some period on time for signs in the LSA64 dataset, and the inaccuracy of \verb|Pick| for the BSLDict dataset. Users also did not find the need to hide the non-signing hand for single-handed signs intuitive, and would rather have both hands present on the webcam feed. A breakdown of ratings given by the users is illustrated below:
+
+\rowcolors{2}{gray!5}{gray!30}
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{ |c|c|c| }
+            \hline
+            Model  & Usability (/10) & Satisfaction based on Accuracy(/10) \\
+            \hline
+            User 1 & 8               & 9                                   \\
+            User 2 & 7               & 8                                   \\
+            User 3 & 9               & 8                                   \\
+            User 4 & 6               & 6                                   \\
+            User 5 & 7               & 8                                   \\
+            \hline
+        \end{tabular}
+    \end{center}
+    \caption{Results for each label}
+    \label{tab:feedback}
+\end{table}
 
 \section{Performance}
 \label{sec:performance}
@@ -456,6 +481,6 @@ The results from the isolated test shows that the processing time is dependent o
     \item Adapting the comparison to longer sequences, such as sign gestures that take longer to execute.
 \end{itemize}
 
-It is unclear whether the number of landmarks would affect the performance, such as including face landmarks. This is also interesting if further work is done to research the benefits of this method on continuous sign language recognition.
+This is important to consider if further work is done to research the benefits of this method on continuous sign language recognition.
 
 \end{document}
