@@ -9,3 +9,4 @@ Progress Report
 *.synctex.gz
 *.toc
 *.out
+.vscode
